@@ -1,0 +1,260 @@
+@import 'tailwindcss';
+
+@import "tw-animate-css";
+
+/* Custom animations for Home page */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.5s ease-in-out;
+}
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    /* Base */
+    --background: #ffffff;
+    --foreground: #0b1f2a;
+    /* deep blue-gray for text */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+    /* Surfaces */
+    --card: #ffffff;
+    --card-foreground: #0b1f2a;
+    --popover: #ffffff;
+    --popover-foreground: #0b1f2a;
+
+    /* Brand */
+    --primary: #00508b;
+    /* main brand blue */
+    --primary-foreground: #ffffff;
+    --secondary: #f9d121;
+    /* brand yellow */
+    --secondary-foreground: #0b1f2a;
+
+    /* Neutrals */
+    --muted: #f3f5f7;
+    --muted-foreground: #5b6b75;
+    --accent: #eef3f6;
+    --accent-foreground: #0b1f2a;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    --border: #e5e9ec;
+    --input: #e5e9ec;
+    --ring: #bfd7ea;
+    /* soft blue ring */
+
+    /* Charts (approximate) */
+    --chart-1: #0ea5e9;
+    --chart-2: #22c55e;
+    --chart-3: #f59e0b;
+    --chart-4: #ef4444;
+    --chart-5: #8b5cf6;
+
+    --radius: 0.625rem;
+
+    /* Sidebar */
+    --sidebar: #f8fafc;
+    --sidebar-foreground: #0b1f2a;
+    --sidebar-primary: #00508b;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f9d121;
+    --sidebar-accent-foreground: #0b1f2a;
+    --sidebar-border: #e5e9ec;
+    --sidebar-ring: #bfd7ea;
+}
+
+.dark {
+    --background: #0b1f2a;
+    --foreground: #eff6fb;
+
+    --card: #0f2430;
+    --card-foreground: #eff6fb;
+    --popover: #0f2430;
+    --popover-foreground: #eff6fb;
+
+    --primary: #2aa0ff;
+    --primary-foreground: #001421;
+    --secondary: #ffd95c;
+    --secondary-foreground: #001421;
+
+    --muted: #112a36;
+    --muted-foreground: #7ea1b6;
+    --accent: #0f2430;
+    --accent-foreground: #eff6fb;
+
+    --destructive: #f87171;
+    --destructive-foreground: #1b0b0b;
+
+    --border: #143141;
+    --input: #143141;
+    --ring: #1f4660;
+
+    --chart-1: #38bdf8;
+    --chart-2: #4ade80;
+    --chart-3: #fbbf24;
+    --chart-4: #f87171;
+    --chart-5: #a78bfa;
+
+    --sidebar: #0f2430;
+    --sidebar-foreground: #eff6fb;
+    --sidebar-primary: #2aa0ff;
+    --sidebar-primary-foreground: #001421;
+    --sidebar-accent: #ffd95c;
+    --sidebar-accent-foreground: #001421;
+    --sidebar-border: #143141;
+    --sidebar-ring: #1f4660;
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@layer utilities {
+    .brand-gradient {
+        background-image: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 80%, white 20%) 45%, var(--secondary) 100%);
+    }
+
+    .glass-card {
+        @apply bg-white/70 backdrop-blur-md ring-1 ring-white/40 shadow-lg;
+    }
+}
+
+@layer utilities {
+    .sr-base {
+        opacity: 0;
+        transform: translate3d(0, 24px, 0) scale(0.98);
+        transition-property: opacity, transform;
+        transition-duration: 0.7s;
+        transition-timing-function: var(--ease-out);
+        will-change: opacity, transform;
+    }
+
+    .sr-active {
+        opacity: 1;
+        transform: none;
+    }
+
+    .sr-fade-up {
+        transform: translate3d(0, 28px, 0) scale(0.97);
+    }
+
+    .sr-fade-down {
+        transform: translate3d(0, -28px, 0) scale(0.97);
+    }
+
+    .sr-fade-left {
+        transform: translate3d(28px, 0, 0) scale(0.98);
+    }
+
+    .sr-fade-right {
+        transform: translate3d(-28px, 0, 0) scale(0.98);
+    }
+
+    .sr-zoom-in {
+        transform: scale(0.9);
+    }
+
+    .sr-delay-100 {
+        transition-delay: 100ms;
+    }
+
+    .sr-delay-200 {
+        transition-delay: 200ms;
+    }
+
+    .sr-delay-300 {
+        transition-delay: 300ms;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .sr-base,
+        .sr-active,
+        .sr-fade-up,
+        .sr-fade-down,
+        .sr-fade-left,
+        .sr-fade-right,
+        .sr-zoom-in {
+            animation: none !important;
+            transform: none !important;
+            transition: none !important;
+        }
+    }
+}
