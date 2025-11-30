@@ -128,6 +128,14 @@ export default function ServicesIndex({
             {/* Filters Section */}
             <section className="bg-white border-b sticky top-0 z-10 shadow-sm">
                 <div className="container mx-auto px-4">
+                    {/* Nos procédures Section */}
+                    <div className="py-8 border-b">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">Nos procédures</h2>
+                        <p className="text-gray-600 leading-relaxed">
+                            Nos conseillers de voyage expérimentés répondent à vos questions et vous offrent des conseils personnalisés pour des destinations exotiques, séjours de luxe, vacances en famille ou voyages d'affaires.
+                        </p>
+                    </div>
+
                     {/* Destination Tabs */}
                     {destinations.length > 0 && (
                         <div className="py-4">

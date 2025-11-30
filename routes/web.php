@@ -23,6 +23,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\TourismController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -69,6 +70,12 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 // À propos
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');
+
+// Pages statiques
+Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
+Route::get('/privacy', [StaticPageController::class, 'privacy'])->name('privacy');
+Route::get('/help', [StaticPageController::class, 'help'])->name('help');
+Route::get('/faq', [StaticPageController::class, 'faq'])->name('faq');
 
 // Callback paiement (sans auth pour webhook) - Accepte GET et POST
 Route::match(['get', 'post'], 'payments/callback', [PaymentController::class, 'callback'])->name('payments.callback');

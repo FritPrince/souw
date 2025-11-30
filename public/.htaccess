@@ -1,9 +1,19 @@
+# Configuration PHP pour Hostinger (LiteSpeed)
+# Note: La méthode la plus fiable est de configurer PHP 8.4 via hPanel > PHP Selector
+# Si cela ne fonctionne pas, créez un fichier .user.ini à la racine de public_html avec:
+# default_version=php84
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
     RewriteEngine On
+
+    # Force HTTPS - Rediriger HTTP vers HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

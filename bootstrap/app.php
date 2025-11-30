@@ -3,6 +3,8 @@
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\ForceHttps;
+use App\Http\Middleware\TrustProxies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -20,6 +22,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureAdmin::class,
         ]);
+
+        // Trust proxies pour détecter HTTPS derrière un reverse proxy (Hostinger)
+        // Force HTTPS en production
+        $prepend = [TrustProxies::class];
+        // Vérifier l'environnement via la variable d'environnement directement
+        // Utiliser $_ENV pour éviter les problèmes de résolution de dépendance
+        $appEnv = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? 'local';
+        if ($appEnv === 'production') {
+            $prepend[] = ForceHttps::class;
+        }
+        $middleware->web(prepend: $prepend);
 
         $middleware->web(append: [
             HandleAppearance::class,

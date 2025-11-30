@@ -169,7 +169,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => env('SESSION_SECURE_COOKIE', ($_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? 'local') === 'production'),
 
     /*
     |--------------------------------------------------------------------------
