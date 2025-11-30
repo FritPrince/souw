@@ -23,16 +23,16 @@ export default defineConfig(({ command }) => {
     // En production, les types doivent être générés manuellement avant le build
     if (command === 'serve') {
         plugins.push(
-            wayfinder({
-                formVariants: true,
+        wayfinder({
+            formVariants: true,
             })
         );
     }
 
     return {
         plugins,
-        esbuild: {
-            jsx: 'automatic',
-        },
+    esbuild: {
+        jsx: 'automatic',
+    },
     };
 });
