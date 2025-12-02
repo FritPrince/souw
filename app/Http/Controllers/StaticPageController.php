@@ -54,3 +54,4 @@ class StaticPageController extends Controller
 }
 
 
+

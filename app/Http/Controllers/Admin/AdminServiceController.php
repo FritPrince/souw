@@ -35,225 +35,361 @@ class AdminServiceController extends Controller
 
     public function store(StoreServiceRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        try {
+            Log::info('=== STORE SERVICE START ===');
+            Log::info('Request data keys:', array_keys($request->all()));
+            Log::info('Has image file:', ['has' => $request->hasFile('image')]);
+            
+            $data = $request->validated();
+            Log::info('Validated data keys:', array_keys($data));
 
-        $service = Service::create($data);
+            // Handle main image upload
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                Log::info('Image file info:', [
+                    'isValid' => $image->isValid(),
+                    'mimeType' => $image->getMimeType(),
+                    'size' => $image->getSize(),
+                ]);
+                
+                if ($image->isValid() && in_array($image->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp']) && $image->getSize() <= 4194304) { // 4MB
+                    $path = $image->store('services', 'public');
+                    $data['image_path'] = '/storage/'.$path;
+                    $data['media_type'] = 'image';
+                    Log::info('Image uploaded successfully:', ['path' => $data['image_path']]);
+                } else {
+                    Log::warning('Image validation failed');
+                }
+            }
 
-        // Handle gallery images
-        $allFiles = $request->allFiles();
-        Log::info('Gallery images upload - allFiles keys:', array_keys($allFiles));
-        
-        // Récupérer toutes les images de la galerie
-        foreach ($allFiles as $key => $file) {
-            if (str_starts_with($key, 'gallery_image_') && !str_contains($key, '_order_')) {
-                // Extraire l'index de la clé comme "gallery_image_0"
-                preg_match('/gallery_image_(\d+)/', $key, $matches);
-                $index = $matches[1] ?? null;
+            Log::info('Creating service with data:', $data);
+            Log::info('Slug being used:', ['slug' => $data['slug'] ?? 'NOT SET']);
+            
+            // Vérifier si le slug existe déjà AVANT de créer
+            $existingService = Service::where('slug', $data['slug'])->first();
+            if ($existingService) {
+                Log::error('Slug already exists before creation attempt', [
+                    'slug' => $data['slug'],
+                    'existing_service_id' => $existingService->id,
+                ]);
+                return redirect()->back()
+                    ->withErrors(['slug' => "Ce slug est déjà utilisé. Veuillez en choisir un autre."])
+                    ->withInput();
+            }
+            
+            $service = Service::create($data);
+            Log::info('Service created successfully:', ['id' => $service->id, 'slug' => $service->slug]);
 
-                if ($index !== null && $request->hasFile($key)) {
-                    $uploadedFile = $request->file($key);
-                    
-                    // Valider le fichier
-                    if ($uploadedFile->isValid() && in_array($uploadedFile->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp']) && $uploadedFile->getSize() <= 4194304) { // 4MB
-                        $path = $uploadedFile->store('services/gallery', 'public');
+            // Handle gallery images
+            $allFiles = $request->allFiles();
+            Log::info('Gallery images upload - allFiles keys:', array_keys($allFiles));
+            
+            $galleryImagesCount = 0;
+            // Récupérer toutes les images de la galerie
+            foreach ($allFiles as $key => $file) {
+                if (str_starts_with($key, 'gallery_image_') && !str_contains($key, '_order_')) {
+                    // Extraire l'index de la clé comme "gallery_image_0"
+                    preg_match('/gallery_image_(\d+)/', $key, $matches);
+                    $index = $matches[1] ?? null;
+
+                    if ($index !== null && $request->hasFile($key)) {
+                        $uploadedFile = $request->file($key);
                         
-                        // Récupérer l'ordre correspondant
-                        $orderKey = "gallery_image_order_{$index}";
-                        $order = $request->has($orderKey) ? (int) $request->input($orderKey) : (int) $index;
+                        // Valider le fichier
+                        if ($uploadedFile->isValid() && in_array($uploadedFile->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp']) && $uploadedFile->getSize() <= 4194304) { // 4MB
+                            $path = $uploadedFile->store('services/gallery', 'public');
+                            
+                            // Récupérer l'ordre correspondant
+                            $orderKey = "gallery_image_order_{$index}";
+                            $order = $request->has($orderKey) ? (int) $request->input($orderKey) : (int) $index;
 
-                        $service->images()->create([
-                            'image_path' => '/storage/'.$path,
-                            'display_order' => $order,
-                        ]);
+                            $service->images()->create([
+                                'image_path' => '/storage/'.$path,
+                                'display_order' => $order,
+                            ]);
+                            $galleryImagesCount++;
+                            Log::info('Gallery image created:', ['index' => $index, 'path' => '/storage/'.$path, 'order' => $order]);
+                        } else {
+                            Log::warning('Gallery image validation failed:', ['index' => $index, 'mimeType' => $uploadedFile->getMimeType(), 'size' => $uploadedFile->getSize()]);
+                        }
                     }
                 }
             }
-        }
+            Log::info('Gallery images created count:', ['count' => $galleryImagesCount]);
+            
+            // Vérifier que les images ont bien été créées
+            $actualImagesCount = $service->images()->count();
+            Log::info('Actual gallery images in database:', ['count' => $actualImagesCount]);
 
-        // Handle sub-services
-        if ($request->has('sub_services')) {
-            $subServices = $request->input('sub_services', []);
-            if (is_string($subServices)) {
-                $subServices = json_decode($subServices, true) ?? [];
-            }
-            if (is_array($subServices)) {
-                foreach ($subServices as $subServiceData) {
-                    if (! empty($subServiceData['name'])) {
-                        $service->subServices()->create($subServiceData);
+            // Handle sub-services
+            if ($request->has('sub_services')) {
+                $subServices = $request->input('sub_services', []);
+                if (is_string($subServices)) {
+                    $subServices = json_decode($subServices, true) ?? [];
+                }
+                if (is_array($subServices)) {
+                    foreach ($subServices as $subServiceData) {
+                        if (! empty($subServiceData['name'])) {
+                            $service->subServices()->create($subServiceData);
+                        }
                     }
                 }
             }
-        }
 
-        // Handle required documents
-        if ($request->has('required_documents')) {
-            $requiredDocuments = $request->input('required_documents', []);
-            if (is_string($requiredDocuments)) {
-                $requiredDocuments = json_decode($requiredDocuments, true) ?? [];
-            }
-            if (is_array($requiredDocuments)) {
-                foreach ($requiredDocuments as $docData) {
-                    if (! empty($docData['name'])) {
-                        $service->requiredDocuments()->create($docData);
+            // Handle required documents
+            if ($request->has('required_documents')) {
+                $requiredDocuments = $request->input('required_documents', []);
+                if (is_string($requiredDocuments)) {
+                    $requiredDocuments = json_decode($requiredDocuments, true) ?? [];
+                }
+                if (is_array($requiredDocuments)) {
+                    foreach ($requiredDocuments as $docData) {
+                        if (! empty($docData['name'])) {
+                            $service->requiredDocuments()->create($docData);
+                        }
                     }
                 }
             }
-        }
 
-        // Handle processing times
-        if ($request->has('processing_times')) {
-            $processingTimes = $request->input('processing_times', []);
-            if (is_string($processingTimes)) {
-                $processingTimes = json_decode($processingTimes, true) ?? [];
-            }
-            if (is_array($processingTimes)) {
-                foreach ($processingTimes as $timeData) {
-                    if (! empty($timeData['duration_label'])) {
-                        $service->processingTimes()->create($timeData);
+            // Handle processing times
+            if ($request->has('processing_times')) {
+                $processingTimes = $request->input('processing_times', []);
+                if (is_string($processingTimes)) {
+                    $processingTimes = json_decode($processingTimes, true) ?? [];
+                }
+                if (is_array($processingTimes)) {
+                    foreach ($processingTimes as $timeData) {
+                        if (! empty($timeData['duration_label'])) {
+                            $service->processingTimes()->create($timeData);
+                        }
                     }
                 }
             }
-        }
 
-        // Handle form fields
-        if ($request->has('form_fields')) {
-            $formFields = $request->input('form_fields', []);
+            // Handle form fields
+            if ($request->has('form_fields')) {
+                $formFields = $request->input('form_fields', []);
 
-            // Handle JSON string from FormData
-            if (is_string($formFields)) {
-                $formFields = json_decode($formFields, true) ?? [];
+                // Handle JSON string from FormData
+                if (is_string($formFields)) {
+                    $formFields = json_decode($formFields, true) ?? [];
+                }
+
+                if (is_array($formFields) && count($formFields) > 0) {
+                    foreach ($formFields as $index => $fieldData) {
+                        // Skip empty fields
+                        if (empty($fieldData['name']) || empty($fieldData['label'])) {
+                            continue;
+                        }
+
+                        // Process options for select fields
+                        $options = null;
+                        if (isset($fieldData['options']) && is_array($fieldData['options']) && count($fieldData['options']) > 0) {
+                            // Filter out empty options
+                            $validOptions = array_filter($fieldData['options'], function ($option) {
+                                return ! empty($option['value']) && ! empty($option['label']);
+                            });
+                            if (count($validOptions) > 0) {
+                                $options = array_values($validOptions);
+                            }
+                        }
+
+                        try {
+                            $service->formFields()->create([
+                                'name' => trim($fieldData['name']),
+                                'label' => trim($fieldData['label']),
+                                'type' => $fieldData['type'] ?? 'text',
+                                'placeholder' => ! empty($fieldData['placeholder']) ? trim($fieldData['placeholder']) : null,
+                                'is_required' => isset($fieldData['is_required']) ? (bool) $fieldData['is_required'] : false,
+                                'helper_text' => ! empty($fieldData['helper_text']) ? trim($fieldData['helper_text']) : null,
+                                'options' => $options,
+                                'is_active' => isset($fieldData['is_active']) ? (bool) $fieldData['is_active'] : true,
+                                'display_order' => $index + 1,
+                            ]);
+                        } catch (\Exception $e) {
+                            // Log error but continue with other fields
+                            Log::error('Error creating form field: '.$e->getMessage(), [
+                                'service_id' => $service->id,
+                                'field_data' => $fieldData,
+                            ]);
+                        }
+                    }
+                }
             }
 
-            if (is_array($formFields) && count($formFields) > 0) {
-                foreach ($formFields as $index => $fieldData) {
-                    // Skip empty fields
-                    if (empty($fieldData['name']) || empty($fieldData['label'])) {
+            // Handle destinations - always process even if empty array
+            Log::info('=== STORE DESTINATIONS DEBUG ===');
+            Log::info('Service ID:', ['service_id' => $service->id]);
+            Log::info('Request has destinations:', ['has' => $request->has('destinations')]);
+            Log::info('All request keys:', ['keys' => array_keys($request->all())]);
+            Log::info('Validated keys:', ['keys' => array_keys($request->validated())]);
+
+            // Try to get from validated data first (already decoded by FormRequest)
+            $validated = $request->validated();
+            $destinations = $validated['destinations'] ?? $request->input('destinations', []);
+
+            Log::info('Raw destinations:', ['destinations' => $destinations, 'type' => gettype($destinations)]);
+
+            // If still a string, decode it (fallback if FormRequest didn't decode)
+            if (is_string($destinations)) {
+                Log::info('Destinations is string, decoding...', ['raw' => $destinations]);
+                $decoded = json_decode($destinations, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $destinations = $decoded;
+                    Log::info('Decoded destinations successfully:', ['destinations' => $destinations]);
+                } else {
+                    Log::error('Failed to decode destinations JSON', ['error' => json_last_error_msg()]);
+                    $destinations = [];
+                }
+            }
+
+            if (is_array($destinations)) {
+                Log::info('Destinations is array, processing...', ['count' => count($destinations)]);
+                $syncData = [];
+                foreach ($destinations as $index => $destData) {
+                    Log::info('Processing destination:', ['index' => $index, 'destData' => $destData, 'keys' => array_keys($destData ?? [])]);
+
+                    // Check if id exists and is valid
+                    if (! isset($destData['id'])) {
+                        Log::warning('Destination data missing id:', ['destData' => $destData, 'index' => $index]);
+
                         continue;
                     }
 
-                    // Process options for select fields
-                    $options = null;
-                    if (isset($fieldData['options']) && is_array($fieldData['options']) && count($fieldData['options']) > 0) {
-                        // Filter out empty options
-                        $validOptions = array_filter($fieldData['options'], function ($option) {
-                            return ! empty($option['value']) && ! empty($option['label']);
-                        });
-                        if (count($validOptions) > 0) {
-                            $options = array_values($validOptions);
-                        }
+                    $destId = $destData['id'];
+
+                    // Convert to integer if it's a string
+                    if (is_string($destId)) {
+                        $destId = (int) $destId;
                     }
 
-                    try {
-                        $service->formFields()->create([
-                            'name' => trim($fieldData['name']),
-                            'label' => trim($fieldData['label']),
-                            'type' => $fieldData['type'] ?? 'text',
-                            'placeholder' => ! empty($fieldData['placeholder']) ? trim($fieldData['placeholder']) : null,
-                            'is_required' => isset($fieldData['is_required']) ? (bool) $fieldData['is_required'] : false,
-                            'helper_text' => ! empty($fieldData['helper_text']) ? trim($fieldData['helper_text']) : null,
-                            'options' => $options,
-                            'is_active' => isset($fieldData['is_active']) ? (bool) $fieldData['is_active'] : true,
-                            'display_order' => $index + 1,
-                        ]);
-                    } catch (\Exception $e) {
-                        // Log error but continue with other fields
-                        Log::error('Error creating form field: '.$e->getMessage(), [
-                            'service_id' => $service->id,
-                            'field_data' => $fieldData,
-                        ]);
+                    if (empty($destId) || $destId <= 0) {
+                        Log::warning('Destination id is invalid:', ['id' => $destId, 'destData' => $destData]);
+
+                        continue;
                     }
+
+                    // Verify destination exists
+                    if (! \App\Models\Destination::where('id', $destId)->exists()) {
+                        Log::warning('Destination does not exist:', ['id' => $destId]);
+
+                        continue;
+                    }
+
+                    $syncData[$destId] = [
+                        'price_override' => isset($destData['price_override']) && $destData['price_override'] !== '' && $destData['price_override'] !== null ? (float) $destData['price_override'] : null,
+                        'is_active' => isset($destData['is_active']) ? (bool) $destData['is_active'] : true,
+                    ];
+                    Log::info('Added destination to sync data:', ['id' => $destId, 'data' => $syncData[$destId]]);
                 }
-            }
-        }
+                Log::info('Sync data prepared:', ['syncData' => $syncData, 'count' => count($syncData)]);
 
-        // Handle destinations - always process even if empty array
-        Log::info('=== STORE DESTINATIONS DEBUG ===');
-        Log::info('Service ID:', ['service_id' => $service->id]);
-        Log::info('Request has destinations:', ['has' => $request->has('destinations')]);
-        Log::info('All request keys:', ['keys' => array_keys($request->all())]);
-        Log::info('Validated keys:', ['keys' => array_keys($request->validated())]);
+                try {
+                    $service->destinations()->sync($syncData);
+                    Log::info('Destinations synced successfully', [
+                        'service_id' => $service->id, 
+                        'synced_count' => count($syncData),
+                        'sync_data' => $syncData,
+                    ]);
 
-        // Try to get from validated data first (already decoded by FormRequest)
-        $validated = $request->validated();
-        $destinations = $validated['destinations'] ?? $request->input('destinations', []);
-
-        Log::info('Raw destinations:', ['destinations' => $destinations, 'type' => gettype($destinations)]);
-
-        // If still a string, decode it (fallback if FormRequest didn't decode)
-        if (is_string($destinations)) {
-            Log::info('Destinations is string, decoding...', ['raw' => $destinations]);
-            $decoded = json_decode($destinations, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                $destinations = $decoded;
-                Log::info('Decoded destinations successfully:', ['destinations' => $destinations]);
+                    // Verify sync worked
+                    $syncedDestinations = $service->destinations()->count();
+                    Log::info('Verification - synced destinations count:', ['count' => $syncedDestinations]);
+                    
+                    // Vérifier que les destinations sont bien liées
+                    $actualDestinations = $service->destinations()->with('pivot')->get();
+                    Log::info('Actual destinations linked:', [
+                        'count' => $actualDestinations->count(),
+                        'destinations' => $actualDestinations->map(fn($d) => ['id' => $d->id, 'name' => $d->name])->toArray(),
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Error syncing destinations:', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'service_id' => $service->id,
+                        'sync_data' => $syncData,
+                    ]);
+                }
             } else {
-                Log::error('Failed to decode destinations JSON', ['error' => json_last_error_msg()]);
-                $destinations = [];
+                Log::warning('Destinations is not an array after processing', ['type' => gettype($destinations), 'value' => $destinations]);
             }
+
+            // Vérification finale avant redirection
+            $service->refresh();
+            $finalImagesCount = $service->images()->count();
+            $finalDestinationsCount = $service->destinations()->count();
+            
+            Log::info('=== STORE SERVICE SUCCESS ===', [
+                'service_id' => $service->id,
+                'slug' => $service->slug,
+                'gallery_images_count' => $finalImagesCount,
+                'destinations_count' => $finalDestinationsCount,
+            ]);
+            
+            return redirect()->route('admin.services.index')
+                ->with('success', 'Service créé avec succès.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('=== STORE SERVICE VALIDATION ERROR ===', [
+                'errors' => $e->errors(),
+                'requested_slug' => $request->input('slug'),
+            ]);
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            $requestedSlug = $request->input('slug');
+            Log::error('=== STORE SERVICE ERROR ===', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'code' => $e->getCode(),
+                'requested_slug' => $requestedSlug,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            // Extraire le message d'erreur SQL si c'est une erreur de base de données
+            $errorMessage = $e->getMessage();
+            $errors = [];
+            
+            if (str_contains($errorMessage, 'SQLSTATE')) {
+                // Vérifier si c'est une erreur de slug en doublon - être plus précis
+                if (preg_match("/Duplicate entry '([^']+)' for key 'services\.slug'/", $errorMessage, $matches) || 
+                    preg_match("/Duplicate entry '([^']+)' for key 'services_slug_unique'/", $errorMessage, $matches)) {
+                    $duplicateSlug = $matches[1];
+                    Log::info('=== SLUG DUPLICATE DETECTED ===', [
+                        'duplicate_slug' => $duplicateSlug,
+                        'requested_slug' => $requestedSlug,
+                        'match' => $duplicateSlug === $requestedSlug,
+                    ]);
+                    
+                    // Vérifier que le slug en erreur correspond bien au slug envoyé
+                    if ($duplicateSlug === $requestedSlug) {
+                        $errors['slug'] = "Ce slug est déjà utilisé. Veuillez en choisir un autre.";
+                        $errorMessage = "Le slug '{$duplicateSlug}' est déjà utilisé par un autre service. Veuillez modifier le slug.";
+                    } else {
+                        // Si le slug ne correspond pas, c'est peut-être une autre erreur
+                        Log::warning('Slug mismatch - duplicate slug does not match requested slug', [
+                            'duplicate' => $duplicateSlug,
+                            'requested' => $requestedSlug,
+                        ]);
+                        $errorMessage = 'Erreur de base de données: '.$errorMessage;
+                    }
+                } elseif (preg_match('/SQLSTATE\[(\w+)\]:\s*(.+)/', $errorMessage, $matches)) {
+                    $errorMessage = 'Erreur de base de données: '.$matches[2];
+                }
+            }
+            
+            // Si on a une erreur de slug, l'ajouter aux erreurs de validation
+            if (isset($errors['slug'])) {
+                return redirect()->back()
+                    ->withErrors($errors)
+                    ->withInput();
+            }
+            
+            return redirect()->back()
+                ->withErrors(['error' => 'Une erreur est survenue lors de la création du service: '.$errorMessage])
+                ->withInput();
         }
-
-        if (is_array($destinations)) {
-            Log::info('Destinations is array, processing...', ['count' => count($destinations)]);
-            $syncData = [];
-            foreach ($destinations as $index => $destData) {
-                Log::info('Processing destination:', ['index' => $index, 'destData' => $destData, 'keys' => array_keys($destData ?? [])]);
-
-                // Check if id exists and is valid
-                if (! isset($destData['id'])) {
-                    Log::warning('Destination data missing id:', ['destData' => $destData, 'index' => $index]);
-
-                    continue;
-                }
-
-                $destId = $destData['id'];
-
-                // Convert to integer if it's a string
-                if (is_string($destId)) {
-                    $destId = (int) $destId;
-                }
-
-                if (empty($destId) || $destId <= 0) {
-                    Log::warning('Destination id is invalid:', ['id' => $destId, 'destData' => $destData]);
-
-                    continue;
-                }
-
-                // Verify destination exists
-                if (! \App\Models\Destination::where('id', $destId)->exists()) {
-                    Log::warning('Destination does not exist:', ['id' => $destId]);
-
-                    continue;
-                }
-
-                $syncData[$destId] = [
-                    'price_override' => isset($destData['price_override']) && $destData['price_override'] !== '' && $destData['price_override'] !== null ? (float) $destData['price_override'] : null,
-                    'is_active' => isset($destData['is_active']) ? (bool) $destData['is_active'] : true,
-                ];
-                Log::info('Added destination to sync data:', ['id' => $destId, 'data' => $syncData[$destId]]);
-            }
-            Log::info('Sync data prepared:', ['syncData' => $syncData, 'count' => count($syncData)]);
-
-            try {
-                $service->destinations()->sync($syncData);
-                Log::info('Destinations synced successfully', ['service_id' => $service->id, 'synced_count' => count($syncData)]);
-
-                // Verify sync worked
-                $syncedDestinations = $service->destinations()->count();
-                Log::info('Verification - synced destinations count:', ['count' => $syncedDestinations]);
-            } catch (\Exception $e) {
-                Log::error('Error syncing destinations:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'service_id' => $service->id,
-                    'sync_data' => $syncData,
-                ]);
-            }
-        } else {
-            Log::warning('Destinations is not an array after processing', ['type' => gettype($destinations), 'value' => $destinations]);
-        }
-
-        return redirect()->route('admin.services.index')
-            ->with('success', 'Service créé avec succès.');
     }
 
     public function edit(Service $service): Response
@@ -278,6 +414,20 @@ class AdminServiceController extends Controller
         $serviceArray['requiredDocuments'] = $service->requiredDocuments->toArray();
         $serviceArray['processingTimes'] = $service->processingTimes->toArray();
         $serviceArray['images'] = $service->images->toArray();
+        // Explicitly add destinations with pivot data to ensure they're serialized
+        $serviceArray['destinations'] = $service->destinations->map(function ($destination) {
+            return [
+                'id' => $destination->id,
+                'name' => $destination->name,
+                'slug' => $destination->slug,
+                'code' => $destination->code,
+                'flag_emoji' => $destination->flag_emoji,
+                'pivot' => [
+                    'price_override' => $destination->pivot->price_override,
+                    'is_active' => $destination->pivot->is_active,
+                ],
+            ];
+        })->toArray();
 
         return Inertia::render('Admin/Services/Edit', [
             'service' => $serviceArray,
@@ -289,6 +439,23 @@ class AdminServiceController extends Controller
     public function update(UpdateServiceRequest $request, Service $service): Response
     {
         $data = $request->validated();
+
+        // Handle main image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            if ($image->isValid() && in_array($image->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp']) && $image->getSize() <= 4194304) { // 4MB
+                // Supprimer l'ancienne image si elle existe
+                if ($service->image_path) {
+                    $oldPath = str_replace('/storage/', '', $service->image_path);
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+                $path = $image->store('services', 'public');
+                $data['image_path'] = '/storage/'.$path;
+                $data['media_type'] = 'image';
+            }
+        }
 
         // Only update fields that are present in validated data
         if (! empty($data)) {
@@ -578,6 +745,20 @@ class AdminServiceController extends Controller
         $serviceArray['requiredDocuments'] = $service->requiredDocuments->toArray();
         $serviceArray['processingTimes'] = $service->processingTimes->toArray();
         $serviceArray['images'] = $service->images->toArray();
+        // Explicitly add destinations with pivot data to ensure they're serialized
+        $serviceArray['destinations'] = $service->destinations->map(function ($destination) {
+            return [
+                'id' => $destination->id,
+                'name' => $destination->name,
+                'slug' => $destination->slug,
+                'code' => $destination->code,
+                'flag_emoji' => $destination->flag_emoji,
+                'pivot' => [
+                    'price_override' => $destination->pivot->price_override,
+                    'is_active' => $destination->pivot->is_active,
+                ],
+            ];
+        })->toArray();
 
         // Use Inertia::render instead of redirect to ensure formFields are included
         return Inertia::render('Admin/Services/Edit', [

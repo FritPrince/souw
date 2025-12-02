@@ -71,16 +71,8 @@ export default function Create({ categories, destinations: availableDestinations
     const [processingTimes, setProcessingTimes] = useState<ProcessingTime[]>([]);
     const [formFields, setFormFields] = useState<FormField[]>([]);
     const [selectedDestinations, setSelectedDestinations] = useState<ServiceDestination[]>([]);
-
-    useEffect(() => {
-        return () => {
-            galleryImages.forEach((img) => {
-                if (img.preview?.startsWith('blob:')) {
-                    URL.revokeObjectURL(img.preview);
-                }
-            });
-        };
-    }, [galleryImages]);
+    const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+    const [mainImageFile, setMainImageFile] = useState<File | null>(null);
 
     const { data, setData, processing, errors } = useForm({
         category_id: '',
@@ -92,12 +84,53 @@ export default function Create({ categories, destinations: availableDestinations
         is_active: true,
         requires_appointment: false,
         appointment_pricing_mode: 'service_plus_appointment' as 'service_plus_appointment' | 'appointment_only',
+        media_type: 'image' as 'image' | 'video',
     });
+
+    useEffect(() => {
+        return () => {
+            galleryImages.forEach((img) => {
+                if (img.preview?.startsWith('blob:')) {
+                    URL.revokeObjectURL(img.preview);
+                }
+            });
+            if (mainImagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(mainImagePreview);
+            }
+        };
+    }, [galleryImages, mainImagePreview]);
+
+    const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setMainImageFile(file);
+            const preview = URL.createObjectURL(file);
+            setMainImagePreview(preview);
+            setData('media_type', 'image');
+        }
+    };
+
+    const removeMainImage = () => {
+        if (mainImagePreview?.startsWith('blob:')) {
+            URL.revokeObjectURL(mainImagePreview);
+        }
+        setMainImagePreview(null);
+        setMainImageFile(null);
+        setData('media_type', null);
+    };
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
+        // Empêcher la double soumission
+        if (processing) {
+            console.warn('Form is already processing, ignoring duplicate submission');
+            return;
+        }
+        
         console.log('=== CREATE FORM SUBMISSION ===');
+        console.log('Form data:', data);
+        console.log('Slug being sent:', data.slug);
         console.log('selectedDestinations state:', selectedDestinations);
         console.log('selectedDestinations count:', selectedDestinations.length);
         console.log('selectedDestinations JSON:', JSON.stringify(selectedDestinations));
@@ -111,6 +144,13 @@ export default function Create({ categories, destinations: availableDestinations
             form_fields: JSON.stringify(formFields),
             destinations: JSON.stringify(selectedDestinations),
         };
+        
+        console.log('Payload slug:', payload.slug);
+
+        // Add main image if provided
+        if (mainImageFile) {
+            payload['image'] = mainImageFile;
+        }
 
         // Add gallery images - utiliser une syntaxe plus simple pour FormData
         galleryImages.forEach((img, index) => {
@@ -123,9 +163,30 @@ export default function Create({ categories, destinations: availableDestinations
         console.log('Full payload keys:', Object.keys(payload));
         console.log('Destinations in payload:', payload.destinations);
         console.log('Destinations type:', typeof payload.destinations);
+        console.log('Gallery images count:', galleryImages.filter(img => img.file).length);
         
         (router.post as any)('/admin/services', payload, { 
             forceFormData: true,
+            preserveState: false,
+            preserveScroll: false,
+            onError: (errors: any) => {
+                console.error('=== FORM ERRORS ===', errors);
+                // Afficher toutes les erreurs dans la console
+                Object.keys(errors).forEach(key => {
+                    console.error(`Error ${key}:`, errors[key]);
+                });
+            },
+            onSuccess: (page) => {
+                console.log('=== FORM SUCCESS ===', page);
+                // Réinitialiser le formulaire après succès
+                setMainImagePreview(null);
+                setMainImageFile(null);
+                setGalleryImages([]);
+                setSelectedDestinations([]);
+            },
+            onFinish: () => {
+                console.log('=== FORM FINISHED ===');
+            },
         });
     };
 
@@ -289,6 +350,14 @@ export default function Create({ categories, destinations: availableDestinations
                 </div>
 
                 <form onSubmit={onSubmit} className="bg-white dark:bg-gray-900 rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-gray-800 p-6 md:p-8 space-y-8">
+                    {/* Affichage des erreurs générales */}
+                    {errors.error && (
+                        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                            <p className="text-sm text-red-800 dark:text-red-200 font-medium">Erreur :</p>
+                            <p className="text-sm text-red-700 dark:text-red-300 mt-1 whitespace-pre-wrap">{errors.error}</p>
+                        </div>
+                    )}
+
                     {/* Informations de base */}
                     <section>
                         <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">Informations de base</h2>
@@ -326,13 +395,24 @@ export default function Create({ categories, destinations: availableDestinations
                             <div>
                                 <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Slug <span className="text-red-500">*</span></label>
                                 <input
-                                    className="mt-2 block w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+                                    className={`mt-2 block w-full rounded-lg border px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-4 ${
+                                        errors.slug 
+                                            ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 focus:ring-red-500/20 focus:border-red-500' 
+                                            : 'border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]'
+                                    }`}
                                     placeholder="Ex: visa-usa"
                                     value={data.slug}
                                     onChange={(e) => setData('slug', e.target.value)}
                                     aria-invalid={!!errors.slug}
                                 />
-                                {errors.slug && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.slug}</p>}
+                                {errors.slug && (
+                                    <div className="mt-1">
+                                        <p className="text-red-600 dark:text-red-400 text-xs">{errors.slug}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            Astuce : Modifiez le slug pour le rendre unique (ex: {data.slug}-2, {data.slug}-nouveau)
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -362,6 +442,51 @@ export default function Create({ categories, destinations: availableDestinations
                                 {errors.description && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.description}</p>}
                             </div>
 
+                            {/* Image principale du service */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                                    Image principale du service
+                                </label>
+                                <div className="space-y-3">
+                                    {mainImagePreview ? (
+                                        <div className="relative inline-block">
+                                            <div className="h-48 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700">
+                                                <img src={mainImagePreview} className="h-full w-full object-cover" alt="Preview" />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={removeMainImage}
+                                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleMainImageChange}
+                                                className="hidden"
+                                                id="main-image-input"
+                                            />
+                                            <label
+                                                htmlFor="main-image-input"
+                                                className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                <i className="las la-image text-lg"></i>
+                                                <span>Choisir une image principale</span>
+                                            </label>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                Cette image sera affichée dans les cartes de service
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                                {errors.image && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.image}</p>}
+                            </div>
+
+                            {/* Galerie d'images */}
                             <div className="md:col-span-2">
                                 <div className="flex items-center justify-between mb-2">
                                     <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Galerie d'images</label>
@@ -911,9 +1036,9 @@ export default function Create({ categories, destinations: availableDestinations
                         <button
                             type="submit"
                             disabled={processing}
-                            className="px-5 py-2.5 rounded-lg bg-[var(--primary)] text-white shadow hover:opacity-95 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/30 disabled:opacity-60"
+                            className="px-5 py-2.5 rounded-lg bg-[var(--primary)] text-white shadow hover:opacity-95 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/30 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            {processing ? 'Enregistrement...' : 'Enregistrer'}
+                            {processing ? 'Enregistrement en cours...' : 'Enregistrer'}
                         </button>
                     </div>
                 </form>

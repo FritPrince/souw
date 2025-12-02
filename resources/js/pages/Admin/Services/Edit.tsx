@@ -112,6 +112,9 @@ export default function Edit({ service: initialService, categories, destinations
     const service = props.service;
     const destinations = props.destinations || availableDestinations || [];
     
+    const [mainImagePreview, setMainImagePreview] = useState<string | null>(service.image_path || null);
+    const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+    
     // Initialize gallery images from service
     const initializeGalleryImages = (): GalleryImage[] => {
         if (!service.images || service.images.length === 0) {
@@ -182,20 +185,6 @@ export default function Edit({ service: initialService, categories, destinations
         });
     }, [props.service.formFields]);
 
-    // Update destinations when service data changes (after reload)
-    useEffect(() => {
-        if (!props.service.destinations || props.service.destinations.length === 0) {
-            setSelectedDestinations([]);
-            return;
-        }
-        const newDestinations = props.service.destinations.map(dest => ({
-            id: dest.id,
-            price_override: dest.pivot?.price_override ?? null,
-            is_active: dest.pivot?.is_active ?? true,
-        }));
-        setSelectedDestinations(newDestinations);
-    }, [props.service.destinations]);
-
     // Update requiredDocuments when service data changes (after reload)
     useEffect(() => {
         if (!props.service.requiredDocuments || props.service.requiredDocuments.length === 0) {
@@ -229,11 +218,11 @@ export default function Edit({ service: initialService, categories, destinations
 
     // Update gallery images when service data changes (after reload)
     useEffect(() => {
-        if (!props.service.images || props.service.images.length === 0) {
+        if (!service.images || service.images.length === 0) {
             setGalleryImages([]);
             return;
         }
-        const normalized = props.service.images.map((img: any) => ({
+        const normalized = service.images.map((img: any) => ({
             id: img.id,
             file: null,
             preview: img.image_path,
@@ -241,7 +230,7 @@ export default function Edit({ service: initialService, categories, destinations
             isDeleted: false,
         }));
         setGalleryImages(normalized);
-    }, [props.service.images]);
+    }, [service.images]);
 
     useEffect(() => {
         return () => {
@@ -250,8 +239,68 @@ export default function Edit({ service: initialService, categories, destinations
                     URL.revokeObjectURL(img.preview);
                 }
             });
+            if (mainImagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(mainImagePreview);
+            }
         };
-    }, [galleryImages]);
+    }, [galleryImages, mainImagePreview]);
+
+    // Synchroniser l'image principale avec les props
+    useEffect(() => {
+        if (service.image_path && !mainImageFile) {
+            setMainImagePreview(service.image_path);
+        }
+    }, [service.image_path, mainImageFile]);
+
+    // Synchroniser les images de la galerie avec les props
+    useEffect(() => {
+        if (service.images && service.images.length > 0) {
+            const normalized = service.images.map((img: any) => ({
+                id: img.id,
+                file: null,
+                preview: img.image_path,
+                displayOrder: img.display_order,
+                isDeleted: false,
+            }));
+            setGalleryImages(normalized);
+        } else {
+            setGalleryImages([]);
+        }
+    }, [service.images]);
+
+    // Synchroniser les destinations avec les props
+    useEffect(() => {
+        if (service.destinations && service.destinations.length > 0) {
+            const normalized = service.destinations.map((dest: any) => ({
+                id: dest.id,
+                price_override: dest.pivot?.price_override ?? null,
+                is_active: dest.pivot?.is_active ?? true,
+            }));
+            setSelectedDestinations(normalized);
+        } else {
+            setSelectedDestinations([]);
+        }
+    }, [service.destinations]);
+
+    const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setMainImageFile(file);
+            const preview = URL.createObjectURL(file);
+            setMainImagePreview(preview);
+            setData('media_type', 'image');
+        }
+    };
+
+    const removeMainImage = () => {
+        if (mainImagePreview?.startsWith('blob:')) {
+            URL.revokeObjectURL(mainImagePreview);
+        }
+        setMainImagePreview(null);
+        setMainImageFile(null);
+        setData('image_path', null);
+        setData('media_type', null);
+    };
 
     const { data, setData, processing, errors } = useForm({
         category_id: service.category_id.toString(),
@@ -296,6 +345,11 @@ export default function Edit({ service: initialService, categories, destinations
             destinations: JSON.stringify(selectedDestinations),
             _method: 'put',
         };
+
+        // Add main image if a new one was selected
+        if (mainImageFile) {
+            payload['image'] = mainImageFile;
+        }
 
         // Add gallery images - nouvelles images et images existantes à conserver
         const imagesToKeep: number[] = [];
@@ -606,6 +660,69 @@ export default function Edit({ service: initialService, categories, destinations
                                 {errors.description && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.description}</p>}
                             </div>
 
+                            {/* Image principale du service */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                                    Image principale du service
+                                </label>
+                                <div className="space-y-3">
+                                    {mainImagePreview ? (
+                                        <div className="relative inline-block">
+                                            <div className="h-48 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700">
+                                                <img src={mainImagePreview} className="h-full w-full object-cover" alt="Preview" />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={removeMainImage}
+                                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                                            >
+                                                ×
+                                            </button>
+                                            {!mainImageFile && (
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleMainImageChange}
+                                                        className="hidden"
+                                                        id="main-image-input-edit"
+                                                    />
+                                                    <label
+                                                        htmlFor="main-image-input-edit"
+                                                        className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                                    >
+                                                        <i className="las la-edit"></i>
+                                                        <span>Remplacer l'image</span>
+                                                    </label>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleMainImageChange}
+                                                className="hidden"
+                                                id="main-image-input-edit"
+                                            />
+                                            <label
+                                                htmlFor="main-image-input-edit"
+                                                className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                <i className="las la-image text-lg"></i>
+                                                <span>Choisir une image principale</span>
+                                            </label>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                Cette image sera affichée dans les cartes de service
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                                {errors.image && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.image}</p>}
+                            </div>
+
+                            {/* Galerie d'images */}
                             <div className="md:col-span-2">
                                 <div className="flex items-center justify-between mb-2">
                                     <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Galerie d'images</label>

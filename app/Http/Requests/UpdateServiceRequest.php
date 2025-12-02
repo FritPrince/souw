@@ -100,6 +100,7 @@ class UpdateServiceRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('services', 'slug')->ignore($serviceId)],
             'description' => ['sometimes', 'nullable', 'string'],
+            'image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
             // Les images de galerie sont validées dans le contrôleur car elles utilisent une syntaxe dynamique
             'gallery_images_keep' => ['sometimes', 'string'],
             'gallery_images_orders' => ['sometimes', 'string'],

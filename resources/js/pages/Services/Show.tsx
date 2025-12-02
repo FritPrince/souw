@@ -442,13 +442,13 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2 flex-wrap">
                                                                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                                                        {doc.name}
-                                                                    </span>
-                                                                    {doc.is_required && (
+                                                                    {doc.name}
+                                                                </span>
+                                                                {doc.is_required && (
                                                                         <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded-full font-medium">
-                                                                            Requis
-                                                                        </span>
-                                                                    )}
+                                                                        Requis
+                                                                    </span>
+                                                                )}
                                                                 </div>
                                                                 {doc.description && (
                                                                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
@@ -502,26 +502,26 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-3 flex-wrap">
                                                                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                                                        {
-                                                                            pt.duration_label
-                                                                        }
-                                                                    </span>
+                                                                    {
+                                                                        pt.duration_label
+                                                                    }
+                                                                </span>
                                                                     <span className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                                                                         <i className="las la-clock mr-1"></i>
-                                                                        {pt.duration_hours}{' '}
-                                                                        heures
+                                                                    {pt.duration_hours}{' '}
+                                                                    heures
                                                                     </span>
                                                                 </div>
                                                             </div>
                                                             {service.show_price && (
                                                                 <div className="text-right">
-                                                                    <PriceDisplay
-                                                                        amount={
-                                                                            service.price *
-                                                                            pt.price_multiplier
-                                                                        }
-                                                                        size="sm"
-                                                                    />
+                                                                <PriceDisplay
+                                                                    amount={
+                                                                        service.price *
+                                                                        pt.price_multiplier
+                                                                    }
+                                                                    size="sm"
+                                                                />
                                                                 </div>
                                                             )}
                                                         </label>
@@ -569,10 +569,10 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         <div className="flex-1">
                                                             <div className="flex items-center justify-between flex-wrap gap-2">
                                                                 <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                                                                    {
-                                                                        subService.name
-                                                                    }
-                                                                </h3>
+                                                                {
+                                                                    subService.name
+                                                                }
+                                                            </h3>
                                                                 {service.show_price && (
                                                                     <PriceDisplay
                                                                         amount={subService.price}
