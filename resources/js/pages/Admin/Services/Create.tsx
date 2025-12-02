@@ -301,9 +301,9 @@ export default function Create({ categories, destinations: availableDestinations
                                     onChange={(e) => setData('category_id', e.target.value)}
                                     aria-invalid={!!errors.category_id}
                                 >
-                                    <option value="" className="bg-white dark:bg-gray-800">Sélectionner une catégorie</option>
+                                    <option value="">Sélectionner une catégorie</option>
                                     {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.id.toString()} className="bg-white dark:bg-gray-800">
+                                        <option key={cat.id} value={cat.id.toString()}>
                                             {cat.name}
                                         </option>
                                     ))}
@@ -445,8 +445,8 @@ export default function Create({ categories, destinations: availableDestinations
                                         value={data.appointment_pricing_mode}
                                         onChange={(e) => setData('appointment_pricing_mode', e.target.value as 'service_plus_appointment' | 'appointment_only')}
                                     >
-                                        <option value="service_plus_appointment" className="bg-white dark:bg-gray-800">Prix du service + Prix du rendez-vous</option>
-                                        <option value="appointment_only" className="bg-white dark:bg-gray-800">Prix du rendez-vous uniquement</option>
+                                        <option value="service_plus_appointment">Prix du service + Prix du rendez-vous</option>
+                                        <option value="appointment_only">Prix du rendez-vous uniquement</option>
                                     </select>
                                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                         {data.appointment_pricing_mode === 'appointment_only' 

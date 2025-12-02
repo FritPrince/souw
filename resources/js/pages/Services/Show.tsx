@@ -688,9 +688,9 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                                         )
                                                                     }
                                                                 >
-                                                                    <option value="" className="bg-white dark:bg-gray-800">Sélectionner…</option>
+                                                                    <option value="">Sélectionner…</option>
                                                                     {field.options?.map((option) => (
-                                                                        <option key={option.value} value={option.value} className="bg-white dark:bg-gray-800">
+                                                                        <option key={option.value} value={option.value}>
                                                                             {option.label}
                                                                         </option>
                                                                     ))}
@@ -773,7 +773,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                 }
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                             >
-                                                <option value="" className="bg-white dark:bg-gray-800">
+                                                <option value="">
                                                     Sélectionner une
                                                     destination
                                                 </option>
@@ -782,7 +782,6 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         <option
                                                             key={dest.id}
                                                             value={dest.id}
-                                                            className="bg-white dark:bg-gray-800"
                                                         >
                                                             {dest.flag_emoji || ''}{' '}
                                                             {dest.name}
