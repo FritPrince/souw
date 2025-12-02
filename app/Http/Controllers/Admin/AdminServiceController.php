@@ -37,15 +37,38 @@ class AdminServiceController extends Controller
     {
         $data = $request->validated();
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('services', 'public');
-            $data['image_path'] = '/storage/'.$path;
-        }
-
-        unset($data['image']);
-
         $service = Service::create($data);
+
+        // Handle gallery images
+        $allFiles = $request->allFiles();
+        Log::info('Gallery images upload - allFiles keys:', array_keys($allFiles));
+        
+        // Récupérer toutes les images de la galerie
+        foreach ($allFiles as $key => $file) {
+            if (str_starts_with($key, 'gallery_image_') && !str_contains($key, '_order_')) {
+                // Extraire l'index de la clé comme "gallery_image_0"
+                preg_match('/gallery_image_(\d+)/', $key, $matches);
+                $index = $matches[1] ?? null;
+
+                if ($index !== null && $request->hasFile($key)) {
+                    $uploadedFile = $request->file($key);
+                    
+                    // Valider le fichier
+                    if ($uploadedFile->isValid() && in_array($uploadedFile->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp']) && $uploadedFile->getSize() <= 4194304) { // 4MB
+                        $path = $uploadedFile->store('services/gallery', 'public');
+                        
+                        // Récupérer l'ordre correspondant
+                        $orderKey = "gallery_image_order_{$index}";
+                        $order = $request->has($orderKey) ? (int) $request->input($orderKey) : (int) $index;
+
+                        $service->images()->create([
+                            'image_path' => '/storage/'.$path,
+                            'display_order' => $order,
+                        ]);
+                    }
+                }
+            }
+        }
 
         // Handle sub-services
         if ($request->has('sub_services')) {
@@ -241,6 +264,7 @@ class AdminServiceController extends Controller
             'requiredDocuments',
             'processingTimes',
             'destinations',
+            'images',
         ]);
 
         // Load form fields without the is_active filter for admin editing
@@ -250,6 +274,10 @@ class AdminServiceController extends Controller
         // Convert service to array and explicitly add formFields to ensure they're serialized
         $serviceArray = $service->toArray();
         $serviceArray['formFields'] = $formFields->toArray();
+        // Explicitly add requiredDocuments and processingTimes to ensure they're serialized
+        $serviceArray['requiredDocuments'] = $service->requiredDocuments->toArray();
+        $serviceArray['processingTimes'] = $service->processingTimes->toArray();
+        $serviceArray['images'] = $service->images->toArray();
 
         return Inertia::render('Admin/Services/Edit', [
             'service' => $serviceArray,
@@ -262,24 +290,71 @@ class AdminServiceController extends Controller
     {
         $data = $request->validated();
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if (! empty($service->image_path)) {
-                $old = str_replace('/storage/', '', $service->image_path);
-                if (Storage::disk('public')->exists($old)) {
-                    Storage::disk('public')->delete($old);
-                }
-            }
-            $path = $request->file('image')->store('services', 'public');
-            $data['image_path'] = '/storage/'.$path;
-        }
-
-        unset($data['image']);
-
         // Only update fields that are present in validated data
         if (! empty($data)) {
             $service->update($data);
+        }
+
+        // Handle gallery images
+        // 1. Gérer les images à conserver et leurs nouveaux ordres
+        if ($request->has('gallery_images_keep')) {
+            $imagesToKeep = json_decode($request->input('gallery_images_keep', '[]'), true) ?? [];
+            $imagesOrders = json_decode($request->input('gallery_images_orders', '[]'), true) ?? [];
+
+            // Mettre à jour les ordres des images existantes
+            foreach ($imagesOrders as $orderData) {
+                if (isset($orderData['id']) && isset($orderData['order'])) {
+                    $service->images()->where('id', $orderData['id'])->update(['display_order' => $orderData['order']]);
+                }
+            }
+
+            // Supprimer les images qui ne sont pas dans la liste à conserver
+            $service->images()->whereNotIn('id', $imagesToKeep)->get()->each(function ($image) {
+                $old = str_replace('/storage/', '', $image->image_path);
+                if (Storage::disk('public')->exists($old)) {
+                    Storage::disk('public')->delete($old);
+                }
+                $image->delete();
+            });
+        } else {
+            // Si aucune image à conserver n'est spécifiée, supprimer toutes les images existantes
+            $service->images()->get()->each(function ($image) {
+                $old = str_replace('/storage/', '', $image->image_path);
+                if (Storage::disk('public')->exists($old)) {
+                    Storage::disk('public')->delete($old);
+                }
+                $image->delete();
+            });
+        }
+
+        // 2. Ajouter les nouvelles images
+        $allFiles = $request->allFiles();
+        Log::info('Gallery images update - allFiles keys:', array_keys($allFiles));
+
+        foreach ($allFiles as $key => $file) {
+            if (str_starts_with($key, 'gallery_image_') && !str_contains($key, '_order_')) {
+                // Extraire l'index de la clé comme "gallery_image_0"
+                preg_match('/gallery_image_(\d+)/', $key, $matches);
+                $index = $matches[1] ?? null;
+
+                if ($index !== null && $request->hasFile($key)) {
+                    $uploadedFile = $request->file($key);
+                    
+                    // Valider le fichier
+                    if ($uploadedFile->isValid() && in_array($uploadedFile->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp']) && $uploadedFile->getSize() <= 4194304) { // 4MB
+                        $path = $uploadedFile->store('services/gallery', 'public');
+                        
+                        // Récupérer l'ordre correspondant
+                        $orderKey = "gallery_image_order_{$index}";
+                        $order = $request->has($orderKey) ? (int) $request->input($orderKey) : (int) $index;
+
+                        $service->images()->create([
+                            'image_path' => '/storage/'.$path,
+                            'display_order' => $order,
+                        ]);
+                    }
+                }
+            }
         }
 
         // Handle sub-services (delete all and recreate)
@@ -492,17 +567,23 @@ class AdminServiceController extends Controller
             'requiredDocuments',
             'processingTimes',
             'destinations',
+            'images',
         ]);
         $service->setRelation('formFields', $allFields);
 
         // Convert service to array and explicitly add formFields
         $serviceArray = $service->toArray();
         $serviceArray['formFields'] = $allFields->toArray();
+        // Explicitly add requiredDocuments and processingTimes to ensure they're serialized
+        $serviceArray['requiredDocuments'] = $service->requiredDocuments->toArray();
+        $serviceArray['processingTimes'] = $service->processingTimes->toArray();
+        $serviceArray['images'] = $service->images->toArray();
 
         // Use Inertia::render instead of redirect to ensure formFields are included
         return Inertia::render('Admin/Services/Edit', [
             'service' => $serviceArray,
             'categories' => Category::where('is_active', true)->orderBy('order')->get(),
+            'destinations' => Destination::where('is_active', true)->orderBy('name')->get(),
         ])->with([
             'success' => 'Service mis à jour avec succès.',
         ]);
