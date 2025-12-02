@@ -185,3 +185,5 @@ export default function PrivacyIndex({ company }: Props) {
         </PublicLayout>
     );
 }
+
+

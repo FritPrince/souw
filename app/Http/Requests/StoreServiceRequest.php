@@ -97,8 +97,7 @@ class StoreServiceRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:services,slug'],
             'description' => ['nullable', 'string'],
-            'image' => ['sometimes', 'nullable', 'image', 'max:4096'],
-            'image_path' => ['sometimes', 'nullable', 'string', 'max:1024'],
+            // Les images de galerie sont validées dans le contrôleur car elles utilisent une syntaxe dynamique
             'video_path' => ['nullable', 'string', 'max:1024'],
             'media_type' => ['nullable', 'in:image,video'],
             'price' => ['required', 'numeric', 'min:0'],

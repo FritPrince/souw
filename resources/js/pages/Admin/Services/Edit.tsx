@@ -57,6 +57,20 @@ interface FormField {
     is_active: boolean;
 }
 
+interface ServiceImage {
+    id: number;
+    image_path: string;
+    display_order: number;
+}
+
+interface GalleryImage {
+    id?: number; // Si présent, c'est une image existante
+    file: File | null; // Si présent, c'est une nouvelle image
+    preview: string;
+    displayOrder: number;
+    isDeleted?: boolean; // Pour marquer les images existantes à supprimer
+}
+
 interface Service {
     id: number;
     category_id: number;
@@ -73,6 +87,7 @@ interface Service {
     requiredDocuments?: RequiredDocument[];
     processingTimes?: ProcessingTime[];
     formFields?: FormField[];
+    images?: ServiceImage[];
     destinations?: Array<{
         id: number;
         name: string;
@@ -97,7 +112,20 @@ export default function Edit({ service: initialService, categories, destinations
     const service = props.service;
     const destinations = props.destinations || availableDestinations || [];
     
-    const [imagePreview, setImagePreview] = useState<string | null>(service.image_path ?? null);
+    // Initialize gallery images from service
+    const initializeGalleryImages = (): GalleryImage[] => {
+        if (!service.images || service.images.length === 0) {
+            return [];
+        }
+        return service.images.map((img) => ({
+            id: img.id,
+            file: null,
+            preview: img.image_path,
+            displayOrder: img.display_order,
+            isDeleted: false,
+        }));
+    };
+    const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(initializeGalleryImages());
     const [subServices, setSubServices] = useState<SubService[]>(service.subServices || []);
     const [requiredDocuments, setRequiredDocuments] = useState<RequiredDocument[]>(service.requiredDocuments || []);
     const [processingTimes, setProcessingTimes] = useState<ProcessingTime[]>(service.processingTimes || []);
@@ -168,20 +196,68 @@ export default function Edit({ service: initialService, categories, destinations
         setSelectedDestinations(newDestinations);
     }, [props.service.destinations]);
 
+    // Update requiredDocuments when service data changes (after reload)
+    useEffect(() => {
+        if (!props.service.requiredDocuments || props.service.requiredDocuments.length === 0) {
+            setRequiredDocuments([]);
+            return;
+        }
+        const normalized = (props.service.requiredDocuments || []).map((doc: any) => ({
+            id: doc.id,
+            name: doc.name || '',
+            description: doc.description || '',
+            is_required: doc.is_required ?? true,
+            order: doc.order ?? 0,
+        }));
+        setRequiredDocuments(normalized);
+    }, [props.service.requiredDocuments]);
+
+    // Update processingTimes when service data changes (after reload)
+    useEffect(() => {
+        if (!props.service.processingTimes || props.service.processingTimes.length === 0) {
+            setProcessingTimes([]);
+            return;
+        }
+        const normalized = (props.service.processingTimes || []).map((time: any) => ({
+            id: time.id,
+            duration_label: time.duration_label || '',
+            duration_hours: time.duration_hours ?? 0,
+            price_multiplier: time.price_multiplier ?? 1.0,
+        }));
+        setProcessingTimes(normalized);
+    }, [props.service.processingTimes]);
+
+    // Update gallery images when service data changes (after reload)
+    useEffect(() => {
+        if (!props.service.images || props.service.images.length === 0) {
+            setGalleryImages([]);
+            return;
+        }
+        const normalized = props.service.images.map((img: any) => ({
+            id: img.id,
+            file: null,
+            preview: img.image_path,
+            displayOrder: img.display_order,
+            isDeleted: false,
+        }));
+        setGalleryImages(normalized);
+    }, [props.service.images]);
+
     useEffect(() => {
         return () => {
-            if (imagePreview?.startsWith('blob:')) {
-                URL.revokeObjectURL(imagePreview);
-            }
+            galleryImages.forEach((img) => {
+                if (img.preview?.startsWith('blob:')) {
+                    URL.revokeObjectURL(img.preview);
+                }
+            });
         };
-    }, [imagePreview]);
+    }, [galleryImages]);
 
     const { data, setData, processing, errors } = useForm({
         category_id: service.category_id.toString(),
         name: service.name || '',
         slug: service.slug || '',
         description: service.description || '',
-        image: null as File | null,
         price: service.price || 0,
         show_price: service.show_price ?? true,
         is_active: service.is_active ?? true,
@@ -220,6 +296,32 @@ export default function Edit({ service: initialService, categories, destinations
             destinations: JSON.stringify(selectedDestinations),
             _method: 'put',
         };
+
+        // Add gallery images - nouvelles images et images existantes à conserver
+        const imagesToKeep: number[] = [];
+        let newImageIndex = 0;
+        
+        galleryImages.forEach((img) => {
+            if (img.isDeleted) {
+                // Ne pas inclure les images marquées pour suppression
+                return;
+            }
+            if (img.id) {
+                // Image existante à conserver
+                imagesToKeep.push(img.id);
+            } else if (img.file) {
+                // Nouvelle image à uploader - utiliser une syntaxe simple
+                payload[`gallery_image_${newImageIndex}`] = img.file;
+                payload[`gallery_image_order_${newImageIndex}`] = img.displayOrder;
+                newImageIndex++;
+            }
+        });
+        payload['gallery_images_keep'] = JSON.stringify(imagesToKeep);
+        payload['gallery_images_orders'] = JSON.stringify(
+            galleryImages
+                .filter((img) => !img.isDeleted && img.id)
+                .map((img) => ({ id: img.id, order: img.displayOrder }))
+        );
 
         console.log('=== FORM SUBMISSION ===');
         console.log('All formFields in state:', formFields);
@@ -381,6 +483,46 @@ export default function Edit({ service: initialService, categories, destinations
         setSelectedDestinations(updated);
     };
 
+    const addGalleryImage = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const preview = URL.createObjectURL(file);
+                setGalleryImages([...galleryImages, { file, preview, displayOrder: galleryImages.length }]);
+            }
+        };
+        input.click();
+    };
+
+    const removeGalleryImage = (index: number) => {
+        const image = galleryImages[index];
+        if (image.preview?.startsWith('blob:')) {
+            URL.revokeObjectURL(image.preview);
+        }
+        // Si c'est une image existante, la marquer comme supprimée
+        if (image.id) {
+            const updated = [...galleryImages];
+            updated[index].isDeleted = true;
+            setGalleryImages(updated);
+        } else {
+            // Si c'est une nouvelle image, la supprimer complètement
+            const updated = galleryImages.filter((_, i) => i !== index);
+            updated.forEach((img, i) => {
+                img.displayOrder = i;
+            });
+            setGalleryImages(updated);
+        }
+    };
+
+    const updateGalleryImageOrder = (index: number, newOrder: number) => {
+        const updated = [...galleryImages];
+        updated[index].displayOrder = newOrder;
+        setGalleryImages(updated);
+    };
+
     return (
         <AppSidebarLayout breadcrumbs={[{ title: 'Services', href: '/admin/services' }, { title: 'Éditer', href: `/admin/services/${service.id}/edit` }]}>
             <div className="p-6">
@@ -465,30 +607,51 @@ export default function Edit({ service: initialService, categories, destinations
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-800">Image</label>
-                                <div className="mt-2 flex items-center gap-4">
-                                    <div className="h-24 w-32 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                                        {imagePreview ? (
-                                            <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400">Aucune</span>
-                                        )}
-                                    </div>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-[var(--primary)] file:px-3 file:py-1.5 file:text-white hover:file:opacity-95"
-                                        onChange={(e) => {
-                                            const file = e.currentTarget.files?.[0] ?? null;
-                                            setData('image', file);
-                                            if (imagePreview?.startsWith('blob:')) {
-                                                URL.revokeObjectURL(imagePreview);
-                                            }
-                                            setImagePreview(file ? URL.createObjectURL(file) : service.image_path ?? null);
-                                        }}
-                                    />
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-medium text-gray-800">Galerie d'images</label>
+                                    <button
+                                        type="button"
+                                        onClick={addGalleryImage}
+                                        className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                                    >
+                                        + Ajouter une image
+                                    </button>
                                 </div>
-                                {errors.image && <p className="text-red-600 text-xs mt-1">{errors.image}</p>}
+                                <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {galleryImages
+                                        .map((img, originalIndex) => ({ img, originalIndex }))
+                                        .filter(({ img }) => !img.isDeleted)
+                                        .map(({ img, originalIndex }, displayIndex) => (
+                                        <div key={img.id || `new-${originalIndex}`} className="relative group">
+                                            <div className="h-32 w-full rounded-md overflow-hidden bg-gray-100">
+                                                <img src={img.preview} className="h-full w-full object-cover" alt={`Preview ${displayIndex + 1}`} />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeGalleryImage(originalIndex)}
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                            >
+                                                ×
+                                            </button>
+                                            <div className="mt-1">
+                                                <label className="block text-xs text-gray-600">Ordre</label>
+                                                <input
+                                                    type="number"
+                                                    min={0}
+                                                    className="mt-1 block w-full rounded border border-gray-200 px-2 py-1 text-xs"
+                                                    value={img.displayOrder}
+                                                    onChange={(e) => updateGalleryImageOrder(originalIndex, Number(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {galleryImages.filter((img) => !img.isDeleted).length === 0 && (
+                                        <div className="col-span-full text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                                            <p className="text-sm text-gray-500">Aucune image. Cliquez sur "Ajouter une image" pour en ajouter.</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {errors.gallery_images && <p className="text-red-600 text-xs mt-1">{errors.gallery_images}</p>}
                             </div>
 
                             <div className="md:col-span-2 flex gap-6">

@@ -58,8 +58,14 @@ interface FormField {
     is_active: boolean;
 }
 
+interface GalleryImage {
+    file: File | null;
+    preview: string;
+    displayOrder: number;
+}
+
 export default function Create({ categories, destinations: availableDestinations }: Props) {
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
     const [subServices, setSubServices] = useState<SubService[]>([]);
     const [requiredDocuments, setRequiredDocuments] = useState<RequiredDocument[]>([]);
     const [processingTimes, setProcessingTimes] = useState<ProcessingTime[]>([]);
@@ -68,18 +74,19 @@ export default function Create({ categories, destinations: availableDestinations
 
     useEffect(() => {
         return () => {
-            if (imagePreview?.startsWith('blob:')) {
-                URL.revokeObjectURL(imagePreview);
-            }
+            galleryImages.forEach((img) => {
+                if (img.preview?.startsWith('blob:')) {
+                    URL.revokeObjectURL(img.preview);
+                }
+            });
         };
-    }, [imagePreview]);
+    }, [galleryImages]);
 
     const { data, setData, processing, errors } = useForm({
         category_id: '',
         name: '',
         slug: '',
         description: '',
-        image: null as File | null,
         price: 0,
         show_price: true,
         is_active: true,
@@ -104,6 +111,14 @@ export default function Create({ categories, destinations: availableDestinations
             form_fields: JSON.stringify(formFields),
             destinations: JSON.stringify(selectedDestinations),
         };
+
+        // Add gallery images - utiliser une syntaxe plus simple pour FormData
+        galleryImages.forEach((img, index) => {
+            if (img.file) {
+                payload[`gallery_image_${index}`] = img.file;
+                payload[`gallery_image_order_${index}`] = img.displayOrder;
+            }
+        });
         
         console.log('Full payload keys:', Object.keys(payload));
         console.log('Destinations in payload:', payload.destinations);
@@ -215,6 +230,39 @@ export default function Create({ categories, destinations: availableDestinations
         setFormFields(updated);
     };
 
+    const addGalleryImage = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const preview = URL.createObjectURL(file);
+                setGalleryImages([...galleryImages, { file, preview, displayOrder: galleryImages.length }]);
+            }
+        };
+        input.click();
+    };
+
+    const removeGalleryImage = (index: number) => {
+        const image = galleryImages[index];
+        if (image.preview?.startsWith('blob:')) {
+            URL.revokeObjectURL(image.preview);
+        }
+        const updated = galleryImages.filter((_, i) => i !== index);
+        // Réorganiser les displayOrder
+        updated.forEach((img, i) => {
+            img.displayOrder = i;
+        });
+        setGalleryImages(updated);
+    };
+
+    const updateGalleryImageOrder = (index: number, newOrder: number) => {
+        const updated = [...galleryImages];
+        updated[index].displayOrder = newOrder;
+        setGalleryImages(updated);
+    };
+
     const toggleDestination = (destinationId: number) => {
         const existing = selectedDestinations.find(d => d.id === destinationId);
         if (existing) {
@@ -315,30 +363,48 @@ export default function Create({ categories, destinations: availableDestinations
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-800">Image</label>
-                                <div className="mt-2 flex items-center gap-4">
-                                    <div className="h-24 w-32 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                                        {imagePreview ? (
-                                            <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400">Aucune</span>
-                                        )}
-                                    </div>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-[var(--primary)] file:px-3 file:py-1.5 file:text-white hover:file:opacity-95"
-                                        onChange={(e) => {
-                                            const file = e.currentTarget.files?.[0] ?? null;
-                                            setData('image', file);
-                                            if (imagePreview?.startsWith('blob:')) {
-                                                URL.revokeObjectURL(imagePreview);
-                                            }
-                                            setImagePreview(file ? URL.createObjectURL(file) : null);
-                                        }}
-                                    />
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-medium text-gray-800">Galerie d'images</label>
+                                    <button
+                                        type="button"
+                                        onClick={addGalleryImage}
+                                        className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                                    >
+                                        + Ajouter une image
+                                    </button>
                                 </div>
-                                {errors.image && <p className="text-red-600 text-xs mt-1">{errors.image}</p>}
+                                <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {galleryImages.map((img, index) => (
+                                        <div key={index} className="relative group">
+                                            <div className="h-32 w-full rounded-md overflow-hidden bg-gray-100">
+                                                <img src={img.preview} className="h-full w-full object-cover" alt={`Preview ${index + 1}`} />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeGalleryImage(index)}
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                            >
+                                                ×
+                                            </button>
+                                            <div className="mt-1">
+                                                <label className="block text-xs text-gray-600">Ordre</label>
+                                                <input
+                                                    type="number"
+                                                    min={0}
+                                                    className="mt-1 block w-full rounded border border-gray-200 px-2 py-1 text-xs"
+                                                    value={img.displayOrder}
+                                                    onChange={(e) => updateGalleryImageOrder(index, Number(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {galleryImages.length === 0 && (
+                                        <div className="col-span-full text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                                            <p className="text-sm text-gray-500">Aucune image. Cliquez sur "Ajouter une image" pour en ajouter.</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {errors.gallery_images && <p className="text-red-600 text-xs mt-1">{errors.gallery_images}</p>}
                             </div>
 
                             <div className="md:col-span-2 flex flex-wrap gap-6">

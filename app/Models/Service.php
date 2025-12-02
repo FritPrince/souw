@@ -81,4 +81,9 @@ class Service extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(ServiceImage::class)->orderBy('display_order');
+    }
 }

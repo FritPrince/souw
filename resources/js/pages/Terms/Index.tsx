@@ -129,3 +129,5 @@ export default function TermsIndex({ company }: Props) {
         </PublicLayout>
     );
 }
+
+

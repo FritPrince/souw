@@ -52,3 +52,5 @@ class StaticPageController extends Controller
         ]);
     }
 }
+
+

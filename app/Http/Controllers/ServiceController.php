@@ -64,6 +64,7 @@ class ServiceController extends Controller
             'destinations' => fn ($q) => $q->where('destinations.is_active', true),
             'requiredDocuments',
             'processingTimes',
+            'images',
         ]);
 
         // Load formFields separately to ensure they're serialized (only active fields for client)
@@ -72,17 +73,31 @@ class ServiceController extends Controller
             ->orderBy('display_order')
             ->get();
 
-        // Convert service to array and explicitly add formFields
+        // Convert service to array and explicitly add formFields and images
         $serviceArray = $service->toArray();
         $serviceArray['form_fields'] = $formFields->toArray();
+        $serviceArray['images'] = $service->images->toArray();
 
         // Récupérer le prix des rendez-vous
         $company = \App\Models\CompanyInfo::first();
         $appointmentPrice = (float) ($company?->appointment_price ?? 0);
 
+        // Charger les services similaires (même catégorie, excluant le service actuel)
+        $relatedServices = Service::where('is_active', true)
+            ->where('id', '!=', $service->id)
+            ->when($service->category_id, function ($query) use ($service) {
+                return $query->where('category_id', $service->category_id);
+            })
+            ->with(['category', 'destinations' => function ($q) {
+                $q->where('destinations.is_active', true);
+            }])
+            ->limit(8)
+            ->get();
+
         return Inertia::render('Services/Show', [
             'service' => $serviceArray,
             'appointmentPrice' => $appointmentPrice,
+            'relatedServices' => $relatedServices,
         ]);
     }
 
