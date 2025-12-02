@@ -17,7 +17,7 @@ export default function Testimonials({ testimonials = [] }: TestimonialsProps) {
     if (!testimonials.length) return null;
 
     return (
-        <section className="py-16 bg-gray-50">
+        <section className="py-16 bg-gray-50 dark:bg-gray-900">
             <div className="container mx-auto px-4">
                 <ScrollReveal animation="fade-up">
                     <div className="text-center mb-12">
@@ -32,7 +32,7 @@ export default function Testimonials({ testimonials = [] }: TestimonialsProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {testimonials.map((t, i) => (
                         <ScrollReveal key={t.id} animation="fade-up" delay={i * 80}>
-                            <div className="rounded-2xl bg-white p-6 shadow-lg ring-1 ring-black/5 h-full flex flex-col">
+                            <div className="rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-lg dark:shadow-gray-800/50 ring-1 ring-black/5 dark:ring-gray-700 h-full flex flex-col">
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="h-12 w-12 rounded-full overflow-hidden bg-[var(--primary)]/10 flex items-center justify-center">
                                         {t.avatar_path ? (

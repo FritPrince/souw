@@ -26,7 +26,7 @@ export default function PublicFooter({
     };
 
     return (
-        <footer className="bg-gray-900 text-gray-300 pt-12 md:pt-16 pb-6 md:pb-8">
+        <footer className="bg-gray-900 dark:bg-gray-950 text-gray-300 dark:text-gray-400 pt-12 md:pt-16 pb-6 md:pb-8">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8 md:mb-12">
                     {/* Company Info */}
@@ -178,7 +178,7 @@ export default function PublicFooter({
                                 <input
                                     type="email"
                                     placeholder="Votre email"
-                                    className="w-full px-4 py-2 pr-20 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-primary text-sm"
+                                    className="w-full px-4 py-2 pr-20 bg-gray-800 dark:bg-gray-900 border border-gray-700 dark:border-gray-800 rounded text-white dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary text-sm"
                                 />
                                 <button
                                     type="submit"
@@ -196,9 +196,9 @@ export default function PublicFooter({
                 </div>
 
                 {/* Copyright */}
-                <div className="border-t border-gray-800 pt-8">
+                <div className="border-t border-gray-800 dark:border-gray-900 pt-8">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-                        <p className="text-gray-400 text-center md:text-left">
+                        <p className="text-gray-400 dark:text-gray-500 text-center md:text-left">
                             © {new Date().getFullYear()} {resolvedCompany.name}. Tous droits
                             réservés.
                         </p>

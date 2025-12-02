@@ -158,7 +158,7 @@ function EventsCarousel({ events }: { events: HomeProps['events'] }) {
                         >
                         <Link
                             href={`/events/${event.slug}`}
-                            className="block bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group"
+                            className="block bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-800/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group"
                         >
                         <div className="relative h-48 overflow-hidden">
                             {event.image_path ? (
@@ -271,7 +271,7 @@ export default function Home({
             <Head title="Accueil - SouwTravel" />
 
             {/* Hero Section with Animated Background */}
-            <section className="relative min-h-[640px] flex items-center justify-center overflow-hidden">
+            <section className="relative min-h-[500px] md:min-h-[640px] flex items-center justify-center overflow-hidden py-12 md:py-0">
                 {/* Background Image or Video */}
                 {heroMedia?.media_type === 'video' && heroMedia.video_path ? (
                     <video
@@ -300,11 +300,11 @@ export default function Home({
                 <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-40" style={{ background: 'radial-gradient(closest-side,#f9d121,transparent)' }}></div>
                 <div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl opacity-30" style={{ background: 'radial-gradient(closest-side,#00508b,transparent)' }}></div>
 
-                <div className="container mx-auto px-4 relative z-20">
+                <div className="container mx-auto px-4 relative z-20 w-full">
                     <ScrollReveal animation="fade-up">
                         <div className="max-w-4xl mx-auto text-center">
-                            <div className="mb-8">
-                                <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-5 drop-shadow-xl">
+                            <div className="mb-6 md:mb-8">
+                                <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-4 md:mb-5 drop-shadow-xl leading-tight">
                                     Des Services{' '}
                                     <span className="relative inline-block">
                                         <span
@@ -318,14 +318,14 @@ export default function Home({
                                     Exceptionnels Vous Attendent
                                 </h1>
                             </div>
-                            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
+                            <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 md:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
                                 Votre partenaire de confiance pour tous vos besoins de voyage, visa, immigration et documents administratifs
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-2">
                                 <ScrollReveal animation="fade-up" delay={80}>
                                     <Link
                                         href={services.index()}
-                                        className="inline-flex items-center justify-center px-8 py-4 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-xl font-semibold shadow-[0_10px_30px_rgba(249,209,33,0.35)] hover:shadow-[0_12px_34px_rgba(249,209,33,0.5)] transition-colors"
+                                        className="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-xl font-semibold shadow-[0_10px_30px_rgba(249,209,33,0.35)] hover:shadow-[0_12px_34px_rgba(249,209,33,0.5)] transition-colors text-sm sm:text-base w-full sm:w-auto"
                                     >
                                         Découvrir nos services
                                     </Link>
@@ -333,7 +333,7 @@ export default function Home({
                                 <ScrollReveal animation="fade-up" delay={160}>
                                     <Link
                                         href={destinations.index()}
-                                        className="inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white rounded-xl font-semibold ring-1 ring-white/30 hover:bg-white/15 transition-colors"
+                                        className="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 bg-white/10 text-white rounded-xl font-semibold ring-1 ring-white/30 hover:bg-white/15 transition-colors text-sm sm:text-base w-full sm:w-auto"
                                     >
                                         Explorer les destinations
                                     </Link>
@@ -351,13 +351,13 @@ export default function Home({
                 >
                     <path
                         d="M-31.31,170.22 C164.50,33.05 334.36,-32.06 547.11,196.88 L500.00,150.00 L0.00,150.00 Z"
-                        fill="white"
+                        className="fill-white dark:fill-gray-900"
                     />
                 </svg>
             </section>
 
             {/* Info Section */}
-            <section className="py-16 bg-gray-50">
+            <section className="py-16 bg-gray-50 dark:bg-gray-900">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {infoCards.map((section, index) => {
@@ -366,7 +366,7 @@ export default function Home({
                             const descriptionColor = hasImage ? 'text-white/85' : 'text-[var(--foreground)]/80';
 
                             return (
-                                <div key={`${section.title}-${index}`} className="group relative overflow-hidden rounded-2xl shadow-xl ring-1 ring-black/5">
+                                <div key={`${section.title}-${index}`} className="group relative overflow-hidden rounded-2xl shadow-xl dark:shadow-gray-800/50 ring-1 ring-black/5 dark:ring-gray-800">
                                     {hasImage ? (
                                         <div className="absolute inset-0">
                                             <img
@@ -377,12 +377,12 @@ export default function Home({
                                             <div className="absolute inset-0 bg-gradient-to-br from-[rgba(0,16,28,0.55)] via-[rgba(0,16,28,0.35)] to-[rgba(0,16,28,0.1)]"></div>
                                         </div>
                                     ) : (
-                                        <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-[var(--primary)]/10"></div>
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white dark:from-gray-800 via-white dark:via-gray-800 to-[var(--primary)]/10 dark:to-[var(--primary)]/20"></div>
                                     )}
 
                                     <div className="relative z-10 flex h-full flex-col justify-between gap-6 p-6">
                                         <div className="flex justify-between items-start">
-                                            <div className="inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-[var(--primary)] shadow-md ring-1 ring-black/5">
+                                            <div className="inline-flex items-center gap-2 rounded-full bg-white/85 dark:bg-gray-800/85 px-3 py-1 text-xs font-semibold text-[var(--primary)] shadow-md ring-1 ring-black/5 dark:ring-gray-700">
                                                 <i className={`${section.icon} text-sm`}></i>
                                                 {section.badge && <span>{section.badge}</span>}
                                             </div>
@@ -405,7 +405,7 @@ export default function Home({
 
             {/* Featured Services Section */}
             {featuredServices.length > 0 && (
-                <section className="py-16 bg-gray-50">
+                <section className="py-16 bg-gray-50 dark:bg-gray-900">
                     <div className="container mx-auto px-4">
                         <ScrollReveal animation="fade-up">
                             <div className="text-center mb-12">
@@ -436,7 +436,7 @@ export default function Home({
             )}
 
             {/* Section Les Valeurs du Cabinet */}
-            <section className="py-20 bg-gradient-to-br from-white via-gray-50 to-[var(--primary)]/5">
+            <section className="py-20 bg-gradient-to-br from-white via-gray-50 to-[var(--primary)]/5 dark:from-gray-900 dark:via-gray-900 dark:to-[var(--primary)]/10">
                 <div className="container mx-auto px-4">
                     <ScrollReveal animation="fade-up">
                         <div className="text-center mb-16">
@@ -455,7 +455,7 @@ export default function Home({
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
                         {/* Confiance & Humanité */}
                         <ScrollReveal animation="fade-up" delay={100}>
-                            <div className="bg-white rounded-2xl p-8 shadow-xl ring-1 ring-black/5 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-gray-800/50 ring-1 ring-black/5 dark:ring-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                                 <div className="mb-6">
                                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-cyan-600 text-white shadow-lg">
                                         <svg viewBox="0 0 64 64" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -481,7 +481,7 @@ export default function Home({
 
                         {/* Transparence */}
                         <ScrollReveal animation="fade-up" delay={200}>
-                            <div className="bg-white rounded-2xl p-8 shadow-xl ring-1 ring-black/5 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-gray-800/50 ring-1 ring-black/5 dark:ring-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                                 <div className="mb-6">
                                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
                                         <svg viewBox="0 0 64 64" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -510,7 +510,7 @@ export default function Home({
 
                         {/* Disponibilité */}
                         <ScrollReveal animation="fade-up" delay={300}>
-                            <div className="bg-white rounded-2xl p-8 shadow-xl ring-1 ring-black/5 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 md:col-span-2 lg:col-span-1">
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-gray-800/50 ring-1 ring-black/5 dark:ring-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 md:col-span-2 lg:col-span-1">
                                 <div className="mb-6">
                                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg">
                                         <svg viewBox="0 0 64 64" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -547,7 +547,7 @@ export default function Home({
 
             {/* Section Nos Dernières Aventures */}
             {events.length > 0 && (
-                <section className="py-20 bg-white">
+                <section className="py-20 bg-white dark:bg-gray-900">
                     <div className="container mx-auto px-4">
                         <ScrollReveal animation="fade-up">
                             <div className="text-center mb-16">
@@ -584,7 +584,7 @@ export default function Home({
                                 </div>
                                 <Link
                                     href={destinations.index()}
-                                    className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white shadow-md ring-1 ring-black/5 text-sm font-semibold text-[var(--primary)] hover:text-[var(--primary)]/80"
+                                    className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-800/50 ring-1 ring-black/5 dark:ring-gray-700 text-sm font-semibold text-[var(--primary)] hover:text-[var(--primary)]/80"
                                 >
                                     Voir toutes
                                     <i className="las la-arrow-right"></i>

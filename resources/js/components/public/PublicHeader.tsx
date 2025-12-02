@@ -75,9 +75,9 @@ export default function PublicHeader({
 
     return (
         <>
-            <header className="sticky top-0 z-50 border-b border-white/20 bg-white/70 backdrop-blur-xl supports-[backdrop-filter]:bg-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
+            <header className="sticky top-0 z-50 border-b border-white/20 dark:border-gray-800 bg-white/70 dark:bg-gray-900/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/40 dark:supports-[backdrop-filter]:bg-gray-900/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
                 {/* Top Bar - Hidden on mobile */}
-                <div className="hidden md:block bg-white/30 supports-[backdrop-filter]:bg-white/10 border-b border-white/30">
+                <div className="hidden md:block bg-white/30 dark:bg-gray-800/30 supports-[backdrop-filter]:bg-white/10 dark:supports-[backdrop-filter]:bg-gray-800/10 border-b border-white/30 dark:border-gray-700/30">
                     <div className="container mx-auto px-4 py-2">
                         <div className="flex items-center justify-between text-sm text-[var(--foreground)]/80">
                             <div className="flex items-center gap-6">
@@ -101,7 +101,7 @@ export default function PublicHeader({
                                     <div className="relative" ref={menuRef}>
                                         <button
                                             onClick={() => setShowUserMenu(!showUserMenu)}
-                                            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--foreground)] bg-white/70 rounded-lg ring-1 ring-[var(--primary)]/20 hover:bg-white transition-colors"
+                                            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--foreground)] bg-white/70 dark:bg-gray-800/70 rounded-lg ring-1 ring-[var(--primary)]/20 hover:bg-white dark:hover:bg-gray-800 transition-colors"
                                         >
                                             <svg
                                                 className="w-5 h-5 text-[var(--primary)]"
@@ -119,10 +119,10 @@ export default function PublicHeader({
                                             <span>{user.name}</span>
                                         </button>
                                         {showUserMenu && (
-                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/5 py-1 z-50">
+                                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-black/5 dark:ring-gray-700/50 py-1 z-50">
                                                 <Link
                                                     href="/orders"
-                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     onClick={() => setShowUserMenu(false)}
                                                 >
                                                     <i className="las la-shopping-cart mr-2"></i>
@@ -130,7 +130,7 @@ export default function PublicHeader({
                                                 </Link>
                                                 <Link
                                                     href="/payments"
-                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     onClick={() => setShowUserMenu(false)}
                                                 >
                                                     <i className="las la-credit-card mr-2"></i>
@@ -138,7 +138,7 @@ export default function PublicHeader({
                                                 </Link>
                                                 <Link
                                                     href="/appointments"
-                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     onClick={() => setShowUserMenu(false)}
                                                 >
                                                     <i className="las la-calendar mr-2"></i>
@@ -146,7 +146,7 @@ export default function PublicHeader({
                                                 </Link>
                                                 <Link
                                                     href="/appointments"
-                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     onClick={() => setShowUserMenu(false)}
                                                 >
                                                     <i className="las la-ticket-alt mr-2"></i>
@@ -154,16 +154,16 @@ export default function PublicHeader({
                                                 </Link>
                                                 <Link
                                                     href="/tourism/my-bookings"
-                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     onClick={() => setShowUserMenu(false)}
                                                 >
                                                     <i className="las la-map-marked-alt mr-2"></i>
                                                     Mes réservations
                                                 </Link>
-                                                <div className="border-t my-1"></div>
+                                                <div className="border-t my-1 dark:border-gray-700"></div>
                                                 <button
                                                     onClick={handleLogout}
-                                                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                    className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                                 >
                                                     <i className="las la-sign-out-alt mr-2"></i>
                                                     Déconnexion
@@ -175,7 +175,7 @@ export default function PublicHeader({
                                     <div className="flex items-center gap-2">
                                         <Link
                                             href={login.url()}
-                                            className="px-4 py-1.5 text-sm font-medium text-[var(--foreground)] bg-white/70 rounded-lg ring-1 ring-[var(--primary)]/20 hover:bg-white transition-colors"
+                                            className="px-4 py-1.5 text-sm font-medium text-[var(--foreground)] bg-white/70 dark:bg-gray-800/70 rounded-lg ring-1 ring-[var(--primary)]/20 hover:bg-white dark:hover:bg-gray-800 transition-colors"
                                         >
                                             Connexion
                                         </Link>
@@ -234,7 +234,7 @@ export default function PublicHeader({
                                 <div className="relative" ref={menuRef}>
                                     <button
                                         onClick={() => setShowUserMenu(!showUserMenu)}
-                                        className="flex items-center gap-1 p-2 text-[var(--primary)] hover:bg-gray-100 rounded-lg transition-colors"
+                                        className="flex items-center gap-1 p-2 text-[var(--primary)] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                                     >
                                         <svg
                                             className="w-6 h-6"
@@ -251,10 +251,10 @@ export default function PublicHeader({
                                         </svg>
                                     </button>
                                     {showUserMenu && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/5 py-1 z-50">
+                                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-black/5 dark:ring-gray-700/50 py-1 z-50">
                                             <Link
                                                 href="/orders"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 onClick={() => setShowUserMenu(false)}
                                             >
                                                 <i className="las la-shopping-cart mr-2"></i>
@@ -262,7 +262,7 @@ export default function PublicHeader({
                                             </Link>
                                             <Link
                                                 href="/payments"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 onClick={() => setShowUserMenu(false)}
                                             >
                                                 <i className="las la-credit-card mr-2"></i>
@@ -270,7 +270,7 @@ export default function PublicHeader({
                                             </Link>
                                             <Link
                                                 href="/appointments"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 onClick={() => setShowUserMenu(false)}
                                             >
                                                 <i className="las la-calendar mr-2"></i>
@@ -278,7 +278,7 @@ export default function PublicHeader({
                                             </Link>
                                             <Link
                                                 href="/appointments"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 onClick={() => setShowUserMenu(false)}
                                             >
                                                 <i className="las la-ticket-alt mr-2"></i>
@@ -286,16 +286,16 @@ export default function PublicHeader({
                                             </Link>
                                             <Link
                                                 href="/tourism/my-bookings"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 onClick={() => setShowUserMenu(false)}
                                             >
                                                 <i className="las la-map-marked-alt mr-2"></i>
                                                 Mes réservations
                                             </Link>
-                                            <div className="border-t my-1"></div>
+                                            <div className="border-t my-1 dark:border-gray-700"></div>
                                             <button
                                                 onClick={handleLogout}
-                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                             >
                                                 <i className="las la-sign-out-alt mr-2"></i>
                                                 Déconnexion
@@ -307,7 +307,7 @@ export default function PublicHeader({
                                 <>
                                     <Link
                                         href={login.url()}
-                                        className="px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--foreground)] bg-white/70 rounded-lg ring-1 ring-[var(--primary)]/20 hover:bg-white transition-colors whitespace-nowrap"
+                                        className="px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--foreground)] bg-white/70 dark:bg-gray-800/70 rounded-lg ring-1 ring-[var(--primary)]/20 hover:bg-white dark:hover:bg-gray-800 transition-colors whitespace-nowrap"
                                     >
                                         Connexion
                                     </Link>
@@ -323,7 +323,7 @@ export default function PublicHeader({
                             {/* Mobile Menu Hamburger */}
                             <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className="p-2 text-[var(--foreground)] hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
+                                className="p-2 text-[var(--foreground)] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors lg:hidden"
                                 aria-label="Toggle menu"
                             >
                                 {showMobileMenu ? (
@@ -372,11 +372,11 @@ export default function PublicHeader({
                     />
                     <div
                         ref={mobileMenuRef}
-                        className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-xl z-50 lg:hidden overflow-y-auto transform transition-transform duration-300 ease-in-out"
+                        className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-xl z-50 lg:hidden overflow-y-auto transform transition-transform duration-300 ease-in-out"
                     >
                         <div className="flex flex-col h-full">
                             {/* Mobile Menu Header */}
-                            <div className="flex items-center justify-between p-4 border-b">
+                            <div className="flex items-center justify-between p-4 border-b dark:border-gray-800">
                                 <Link 
                                     href="/" 
                                     className="flex items-center gap-2"
@@ -393,7 +393,7 @@ export default function PublicHeader({
                                 </Link>
                                 <button
                                     onClick={() => setShowMobileMenu(false)}
-                                    className="p-2 hover:bg-gray-100 rounded-lg"
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                     aria-label="Close menu"
                                 >
                                     <svg
@@ -413,17 +413,17 @@ export default function PublicHeader({
                             </div>
 
                             {/* Mobile Contact Info */}
-                            <div className="p-4 border-b bg-gray-50 space-y-2">
+                            <div className="p-4 border-b dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 space-y-2">
                                 <a
                                     href={`tel:${resolvedPhone}`}
-                                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-[var(--primary)] transition-colors"
+                                    className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 hover:text-[var(--primary)] transition-colors"
                                 >
                                     <i className="las la-phone text-lg"></i>
                                     {resolvedPhone}
                                 </a>
                                 <a
                                     href={`mailto:${resolvedEmail}`}
-                                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-[var(--primary)] transition-colors"
+                                    className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 hover:text-[var(--primary)] transition-colors"
                                 >
                                     <i className="las la-envelope text-lg"></i>
                                     {resolvedEmail}
@@ -436,7 +436,7 @@ export default function PublicHeader({
                                     <Link
                                         key={link.href}
                                         href={link.href}
-                                        className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-[var(--primary)] rounded-lg transition-colors"
+                                        className="block px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--primary)] rounded-lg transition-colors"
                                         onClick={() => setShowMobileMenu(false)}
                                     >
                                         {link.label}
@@ -458,10 +458,10 @@ export default function PublicHeader({
 
                             {/* Mobile Auth Section */}
                             {!user && (
-                                <div className="p-4 border-t space-y-2">
+                                <div className="p-4 border-t dark:border-gray-800 space-y-2">
                                     <Link
                                         href={login.url()}
-                                        className="block w-full px-4 py-3 text-center text-sm font-medium text-[var(--foreground)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                        className="block w-full px-4 py-3 text-center text-sm font-medium text-[var(--foreground)] bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                         onClick={() => setShowMobileMenu(false)}
                                     >
                                         Connexion

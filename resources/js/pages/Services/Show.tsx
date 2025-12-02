@@ -239,28 +239,28 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
             <Head title={`${service.name} - SouwTravel`} />
 
             {/* Breadcrumb */}
-            <section className="bg-gray-50 py-4 border-b">
+            <section className="bg-gray-50 dark:bg-gray-900 py-4 border-b dark:border-gray-800">
                 <div className="container mx-auto px-4">
                     <nav className="flex items-center gap-2 text-sm">
                         <Link
                             href={services.index()}
-                            className="text-gray-600 hover:text-primary"
+                            className="text-gray-600 dark:text-gray-400 hover:text-primary"
                         >
                             Services
                         </Link>
-                        <i className="las la-angle-right text-gray-400"></i>
+                        <i className="las la-angle-right text-gray-400 dark:text-gray-600"></i>
                                 {service.category && (
                                     <>
                                         <Link
                                             href={services.index({ query: { category: service.category.id } })}
-                                            className="text-gray-600 hover:text-primary"
+                                            className="text-gray-600 dark:text-gray-400 hover:text-primary"
                                         >
                                             {service.category.name}
                                         </Link>
-                                        <i className="las la-angle-right text-gray-400"></i>
+                                        <i className="las la-angle-right text-gray-400 dark:text-gray-600"></i>
                                     </>
                                 )}
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-gray-900 dark:text-gray-100 font-medium">
                             {service.name}
                         </span>
                     </nav>
@@ -275,10 +275,10 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                         <div className="lg:col-span-2">
                             {/* Gallery d'images */}
                             {galleryImages.length > 0 && (
-                                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                                <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md dark:shadow-gray-800/50 p-6 mb-6">
                                     <div className="space-y-4">
                                         {/* Image principale */}
-                                        <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-gray-100">
+                                        <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
                                             <img
                                                 src={galleryImages[selectedImageIndex]?.image_path}
                                                 alt={`${service.name} - Image ${selectedImageIndex + 1}`}
@@ -290,7 +290,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                     {selectedImageIndex > 0 && (
                                                         <button
                                                             onClick={() => setSelectedImageIndex(selectedImageIndex - 1)}
-                                                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 rounded-full p-2 shadow-lg transition-all"
+                                                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-full p-2 shadow-lg transition-all"
                                                             aria-label="Image précédente"
                                                         >
                                                             <i className="las la-chevron-left text-xl"></i>
@@ -300,7 +300,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                     {selectedImageIndex < galleryImages.length - 1 && (
                                                         <button
                                                             onClick={() => setSelectedImageIndex(selectedImageIndex + 1)}
-                                                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 rounded-full p-2 shadow-lg transition-all"
+                                                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-full p-2 shadow-lg transition-all"
                                                             aria-label="Image suivante"
                                                         >
                                                             <i className="las la-chevron-right text-xl"></i>
@@ -308,18 +308,18 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                     )}
                                                     {/* Indicateur de position */}
                                                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                                                        {galleryImages.map((_, index) => (
-                                                            <button
-                                                                key={index}
-                                                                onClick={() => setSelectedImageIndex(index)}
-                                                                className={`h-2 rounded-full transition-all ${
-                                                                    index === selectedImageIndex
-                                                                        ? 'w-8 bg-white'
-                                                                        : 'w-2 bg-white/50 hover:bg-white/75'
-                                                                }`}
-                                                                aria-label={`Aller à l'image ${index + 1}`}
-                                                            />
-                                                        ))}
+                                                    {galleryImages.map((_, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => setSelectedImageIndex(index)}
+                                                            className={`h-2 rounded-full transition-all ${
+                                                                index === selectedImageIndex
+                                                                    ? 'w-8 bg-white dark:bg-gray-300'
+                                                                    : 'w-2 bg-white/50 dark:bg-gray-600/50 hover:bg-white/75 dark:hover:bg-gray-600/75'
+                                                            }`}
+                                                            aria-label={`Aller à l'image ${index + 1}`}
+                                                        />
+                                                    ))}
                                                     </div>
                                                 </>
                                             )}
@@ -334,7 +334,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                                                             index === selectedImageIndex
                                                                 ? 'border-primary ring-2 ring-primary/20'
-                                                                : 'border-gray-200 hover:border-gray-300'
+                                                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                                         }`}
                                                         aria-label={`Voir l'image ${index + 1}`}
                                                     >
@@ -354,7 +354,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                 </div>
                             )}
 
-                            <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md dark:shadow-gray-800/50 p-8 mb-6">
                                 <div className="flex items-start justify-between mb-6">
                                     <div className="flex-1">
                                         {service.category && (
@@ -384,8 +384,8 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                 </div>
 
                                 {service.description && (
-                                    <div className="prose max-w-none mb-8">
-                                        <div className="text-gray-700 leading-relaxed text-base">
+                                    <div className="prose max-w-none mb-8 dark:prose-invert">
+                                        <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
                                             <div className="whitespace-pre-line">{service.description}</div>
                                         </div>
                                     </div>
@@ -393,8 +393,8 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
 
                                 {service.destinations &&
                                     service.destinations.length > 0 && (
-                                        <div className="mb-8 p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <div className="mb-8 p-6 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-lg border border-primary/20 dark:border-primary/30">
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                                                 <i className="las la-globe text-primary text-xl"></i>
                                                 Destinations disponibles
                                             </h3>
@@ -403,7 +403,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                     (destination) => (
                                                         <span
                                                             key={destination.id}
-                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-shadow border border-gray-200"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
                                                         >
                                                             {destination.flag_emoji && (
                                                                 <span className="text-lg">
@@ -412,7 +412,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                                     }
                                                                 </span>
                                                             )}
-                                                            <span className="text-gray-900">
+                                                            <span className="text-gray-900 dark:text-gray-100">
                                                                 {destination.name}
                                                             </span>
                                                         </span>
@@ -424,9 +424,9 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
 
                                 {service.required_documents &&
                                     service.required_documents.length > 0 && (
-                                        <div className="mb-8 p-6 bg-amber-50 rounded-lg border border-amber-200">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                                <i className="las la-file-alt text-amber-600 text-xl"></i>
+                                        <div className="mb-8 p-6 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                                <i className="las la-file-alt text-amber-600 dark:text-amber-400 text-xl"></i>
                                                 Documents requis
                                             </h3>
                                             <ul className="space-y-3">
@@ -434,24 +434,24 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                     (doc) => (
                                                         <li
                                                             key={doc.id}
-                                                            className="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-100"
+                                                            className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-amber-100 dark:border-amber-800/50"
                                                         >
                                                             <div className="flex-shrink-0 mt-0.5">
-                                                                <i className="las la-file-alt text-amber-600 text-xl"></i>
+                                                                <i className="las la-file-alt text-amber-600 dark:text-amber-400 text-xl"></i>
                                                             </div>
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2 flex-wrap">
-                                                                    <span className="font-semibold text-gray-900">
+                                                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
                                                                         {doc.name}
                                                                     </span>
                                                                     {doc.is_required && (
-                                                                        <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">
+                                                                        <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded-full font-medium">
                                                                             Requis
                                                                         </span>
                                                                     )}
                                                                 </div>
                                                                 {doc.description && (
-                                                                    <p className="text-sm text-gray-600 mt-2">
+                                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                                                                         {
                                                                             doc.description
                                                                         }
@@ -468,7 +468,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                 {service.processing_times &&
                                     service.processing_times.length > 0 && (
                                         <div className="mb-8">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                                                 <i className="las la-clock text-primary text-xl"></i>
                                                 Délais de traitement
                                             </h3>
@@ -479,8 +479,8 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                             key={pt.id}
                                                             className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                                                                 data.processing_time_id === pt.id
-                                                                    ? 'border-primary bg-primary/5 shadow-md'
-                                                                    : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                                                                    ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-md'
+                                                                    : 'border-gray-200 dark:border-gray-700 hover:border-primary/50 dark:hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-800'
                                                             }`}
                                                         >
                                                             <input
@@ -501,12 +501,12 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                             />
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-3 flex-wrap">
-                                                                    <span className="font-semibold text-gray-900">
+                                                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
                                                                         {
                                                                             pt.duration_label
                                                                         }
                                                                     </span>
-                                                                    <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                                                                    <span className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                                                                         <i className="las la-clock mr-1"></i>
                                                                         {pt.duration_hours}{' '}
                                                                         heures
@@ -534,8 +534,8 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
 
                             {service.sub_services &&
                                 service.sub_services.length > 0 && (
-                                    <div className="bg-white rounded-lg shadow-md p-8">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md dark:shadow-gray-800/50 p-8">
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
                                             <i className="las la-list-ul text-primary text-2xl"></i>
                                             Sous-services disponibles
                                         </h2>
@@ -546,8 +546,8 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         key={subService.id}
                                                         className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all ${
                                                             data.sub_service_id === subService.id
-                                                                ? 'border-primary bg-primary/5 shadow-md'
-                                                                : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                                                                ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-md'
+                                                                : 'border-gray-200 dark:border-gray-700 hover:border-primary/50 dark:hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-800'
                                                         }`}
                                                     >
                                                         <input
@@ -568,7 +568,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         />
                                                         <div className="flex-1">
                                                             <div className="flex items-center justify-between flex-wrap gap-2">
-                                                                <h3 className="font-semibold text-gray-900">
+                                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                                                     {
                                                                         subService.name
                                                                     }
@@ -581,7 +581,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                                 )}
                                                             </div>
                                                             {subService.description && (
-                                                                <p className="text-sm text-gray-600 mt-2">
+                                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                                                                     {
                                                                         subService.description
                                                                     }
@@ -598,20 +598,20 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
 
                         {/* Sidebar - Order Form */}
                         <div className="lg:col-span-1">
-                            <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-lg p-6 sticky top-4 border border-gray-200">
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg dark:shadow-gray-800/50 p-6 sticky top-4 border border-gray-200 dark:border-gray-800">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
                                     <i className="las la-shopping-cart text-primary text-2xl"></i>
                                     Commander ce service
                                 </h2>
 
                                 <form onSubmit={handleOrder} className="space-y-4">
                                     {additionalFields.length > 0 && (
-                                        <div className="border border-primary/10 rounded-lg p-4 bg-primary/5 space-y-4">
+                                        <div className="border border-primary/10 dark:border-primary/20 rounded-lg p-4 bg-primary/5 dark:bg-primary/10 space-y-4">
                                             <div>
-                                                <h3 className="text-base font-semibold text-primary mb-1">
+                                                <h3 className="text-base font-semibold text-primary dark:text-primary-foreground mb-1">
                                                     Informations complémentaires
                                                 </h3>
-                                                    <p className="text-xs text-primary/80">
+                                                    <p className="text-xs text-primary/80 dark:text-primary-foreground/80">
                                                     Ces précisions nous permettent de personnaliser le service{' '}
                                                     {service.name.toLowerCase()} sans devoir modifier le code lorsque de
                                                     nouvelles offres arrivent.
@@ -624,7 +624,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         (data.additional_data?.[field.name] ??
                                                             '') as string | number;
                                                     const commonClasses =
-                                                        'w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/60';
+                                                        'w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/60';
                                                     const isRequired = field.is_required;
 
                                                     if (field.type === 'textarea') {
@@ -632,7 +632,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                             <div key={field.id} className="flex flex-col gap-1">
                                                             <label
                                                                 htmlFor={field.name}
-                                                                className="text-sm font-medium text-gray-800"
+                                                                className="text-sm font-medium text-gray-800 dark:text-gray-200"
                                                             >
                                                                 {field.label}
                                                                     {isRequired && (
@@ -655,7 +655,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                                     }
                                                                 />
                                                                 {field.helper_text && (
-                                                                    <p className="text-xs text-gray-500">
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
                                                                         {field.helper_text}
                                                                     </p>
                                                                 )}
@@ -668,7 +668,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                             <div key={field.id} className="flex flex-col gap-1">
                                                                 <label
                                                                     htmlFor={field.name}
-                                                                    className="text-sm font-medium text-gray-800"
+                                                                    className="text-sm font-medium text-gray-800 dark:text-gray-200"
                                                                 >
                                                                     {field.label}
                                                                     {isRequired && (
@@ -688,15 +688,15 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                                         )
                                                                     }
                                                                 >
-                                                                    <option value="">Sélectionner…</option>
+                                                                    <option value="" className="bg-white dark:bg-gray-800">Sélectionner…</option>
                                                                     {field.options?.map((option) => (
-                                                                        <option key={option.value} value={option.value}>
+                                                                        <option key={option.value} value={option.value} className="bg-white dark:bg-gray-800">
                                                                             {option.label}
                                                                         </option>
                                                                     ))}
                                                                 </select>
                                                                 {field.helper_text && (
-                                                                    <p className="text-xs text-gray-500">
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
                                                                         {field.helper_text}
                                                                     </p>
                                                                 )}
@@ -708,7 +708,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         <div key={field.id} className="flex flex-col gap-1">
                                                             <label
                                                                 htmlFor={field.name}
-                                                                className="text-sm font-medium text-gray-800"
+                                                                className="text-sm font-medium text-gray-800 dark:text-gray-200"
                                                             >
                                                                 {field.label}
                                                                 {isRequired && (
@@ -739,7 +739,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                                     }
                                                                 />
                                                             {field.helper_text && (
-                                                                <p className="text-xs text-gray-500">
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
                                                                     {field.helper_text}
                                                                 </p>
                                                             )}
@@ -773,7 +773,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                 }
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                             >
-                                                <option value="">
+                                                <option value="" className="bg-white dark:bg-gray-800">
                                                     Sélectionner une
                                                     destination
                                                 </option>
@@ -782,6 +782,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                         <option
                                                             key={dest.id}
                                                             value={dest.id}
+                                                            className="bg-white dark:bg-gray-800"
                                                         >
                                                             {dest.flag_emoji || ''}{' '}
                                                             {dest.name}
@@ -793,7 +794,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                     )}
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Notes (optionnel)
                                         </label>
                                         <textarea
@@ -802,7 +803,7 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                                 setData('notes', e.target.value)
                                             }
                                             rows={4}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                             placeholder="Ajoutez des informations supplémentaires..."
                                         />
                                     </div>
@@ -834,20 +835,20 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
                                 </form>
 
                                 {service.requires_appointment && (
-                                    <div className="mt-4 p-4 bg-blue-50 rounded-lg space-y-2">
-                                        <p className="text-sm text-blue-800">
+                                    <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-2 border border-blue-100 dark:border-blue-800">
+                                        <p className="text-sm text-blue-800 dark:text-blue-300">
                                             <i className="las la-calendar mr-2"></i>
                                             Ce service nécessite un rendez-vous. Vous
                                             pourrez choisir un créneau disponible après
                                             avoir cliqué sur le bouton ci-dessus.
                                         </p>
                                         {service.appointment_pricing_mode === 'appointment_only' ? (
-                                            <p className="text-xs text-blue-700">
+                                            <p className="text-xs text-blue-700 dark:text-blue-400">
                                                 <i className="las la-info-circle mr-1"></i>
                                                 Frais de rendez-vous uniquement
                                             </p>
                                         ) : appointmentPrice > 0 && (
-                                            <p className="text-xs text-blue-700">
+                                            <p className="text-xs text-blue-700 dark:text-blue-400">
                                                 <i className="las la-info-circle mr-1"></i>
                                                 Prix du service + {new Intl.NumberFormat('fr-FR').format(appointmentPrice)} FCFA (frais de rendez-vous)
                                             </p>
@@ -862,14 +863,14 @@ export default function ServicesShow({ service, appointmentPrice = 0, relatedSer
 
             {/* Articles connexes - Carrousel automatique */}
             {relatedServices.length > 0 && (
-                <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-primary/5">
+                <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-primary/5 dark:from-gray-900 dark:via-gray-900 dark:to-primary/10">
                     <div className="container mx-auto px-4">
                         <div className="mb-10 text-center">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-3">
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center justify-center gap-3">
                                 <i className="las la-th-large text-primary text-3xl"></i>
                                 Articles connexes
                             </h2>
-                            <p className="text-gray-600 text-lg">Découvrez d'autres services qui pourraient vous intéresser</p>
+                            <p className="text-gray-600 dark:text-gray-400 text-lg">Découvrez d'autres services qui pourraient vous intéresser</p>
                         </div>
                         
                         <div 

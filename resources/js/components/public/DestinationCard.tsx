@@ -24,7 +24,7 @@ export default function DestinationCard({
     return (
         <Link
             href={destinations.show({ destination: destination.slug }).url}
-            className={`block bg-white rounded-lg shadow-md overflow-hidden transition-colors duration-300 ${className}`}
+            className={`block bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-800/50 overflow-hidden transition-colors duration-300 ${className}`}
         >
             {(destination.image_path || destination.video_path) && (
                 <div className="relative h-48 overflow-hidden">
@@ -72,11 +72,11 @@ export default function DestinationCard({
                             </span>
                         )}
                         <div>
-                            <h3 className="text-xl font-semibold text-gray-900">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                 {destination.name}
                             </h3>
                             {destination.continent && (
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                     {destination.continent}
                                 </p>
                             )}
@@ -84,13 +84,13 @@ export default function DestinationCard({
                     </div>
 
                     {destination.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                             {destination.description}
                         </p>
                     )}
 
                     {destination.services_count !== undefined && (
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <i className="las la-briefcase"></i>
                             <span>
                                 {destination.services_count} service

@@ -26,7 +26,7 @@ export default function PublicLayout({
     footerProps,
 }: PublicLayoutProps) {
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
             <PublicHeader {...headerProps} />
             <main className="flex-1">{children}</main>
             <PublicFooter {...footerProps} />

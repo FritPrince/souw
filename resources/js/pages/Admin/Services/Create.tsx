@@ -284,91 +284,91 @@ export default function Create({ categories, destinations: availableDestinations
             <div className="p-6">
                 <Head title="Nouveau service" />
                 <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Nouveau service</h1>
+                    <h1 className="text-2xl font-bold dark:text-gray-200">Nouveau service</h1>
                     <Link href="/admin/services" className="text-[var(--primary)] hover:underline">Retour</Link>
                 </div>
 
-                <form onSubmit={onSubmit} className="bg-white rounded-xl shadow-lg ring-1 ring-black/5 p-6 md:p-8 space-y-8">
+                <form onSubmit={onSubmit} className="bg-white dark:bg-gray-900 rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-gray-800 p-6 md:p-8 space-y-8">
                     {/* Informations de base */}
                     <section>
-                        <h2 className="text-lg font-semibold mb-4">Informations de base</h2>
+                        <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">Informations de base</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-800">Catégorie <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Catégorie <span className="text-red-500">*</span></label>
                                 <select
-                                    className="mt-2 block w-full rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+                                    className="mt-2 block w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
                                     value={data.category_id}
                                     onChange={(e) => setData('category_id', e.target.value)}
                                     aria-invalid={!!errors.category_id}
                                 >
-                                    <option value="">Sélectionner une catégorie</option>
+                                    <option value="" className="bg-white dark:bg-gray-800">Sélectionner une catégorie</option>
                                     {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.id.toString()}>
+                                        <option key={cat.id} value={cat.id.toString()} className="bg-white dark:bg-gray-800">
                                             {cat.name}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.category_id && <p className="text-red-600 text-xs mt-1">{errors.category_id}</p>}
+                                {errors.category_id && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.category_id}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-800">Nom <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Nom <span className="text-red-500">*</span></label>
                                 <input
-                                    className="mt-2 block w-full rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+                                    className="mt-2 block w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
                                     placeholder="Ex: Visa USA"
                                     value={data.name}
                                     onChange={(e) => handleNameChange(e.target.value)}
                                     aria-invalid={!!errors.name}
                                 />
-                                {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
+                                {errors.name && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.name}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-800">Slug <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Slug <span className="text-red-500">*</span></label>
                                 <input
-                                    className="mt-2 block w-full rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+                                    className="mt-2 block w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
                                     placeholder="Ex: visa-usa"
                                     value={data.slug}
                                     onChange={(e) => setData('slug', e.target.value)}
                                     aria-invalid={!!errors.slug}
                                 />
-                                {errors.slug && <p className="text-red-600 text-xs mt-1">{errors.slug}</p>}
+                                {errors.slug && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.slug}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-800">Prix <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Prix <span className="text-red-500">*</span></label>
                                 <input
                                     type="number"
                                     min={0}
                                     step="0.01"
-                                    className="mt-2 block w-full rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+                                    className="mt-2 block w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
                                     value={data.price}
                                     onChange={(e) => setData('price', Number(e.target.value))}
                                     aria-invalid={!!errors.price}
                                 />
-                                {errors.price && <p className="text-red-600 text-xs mt-1">{errors.price}</p>}
+                                {errors.price && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.price}</p>}
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-800">Description</label>
+                                <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Description</label>
                                 <textarea
                                     rows={4}
-                                    className="mt-2 block w-full rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+                                    className="mt-2 block w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
                                     placeholder="Description du service..."
                                     value={data.description}
                                     onChange={(e) => setData('description', e.target.value)}
                                     aria-invalid={!!errors.description}
                                 />
-                                {errors.description && <p className="text-red-600 text-xs mt-1">{errors.description}</p>}
+                                {errors.description && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.description}</p>}
                             </div>
 
                             <div className="md:col-span-2">
                                 <div className="flex items-center justify-between mb-2">
-                                    <label className="block text-sm font-medium text-gray-800">Galerie d'images</label>
+                                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">Galerie d'images</label>
                                     <button
                                         type="button"
                                         onClick={addGalleryImage}
-                                        className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                                        className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                                     >
                                         + Ajouter une image
                                     </button>
@@ -376,7 +376,7 @@ export default function Create({ categories, destinations: availableDestinations
                                 <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {galleryImages.map((img, index) => (
                                         <div key={index} className="relative group">
-                                            <div className="h-32 w-full rounded-md overflow-hidden bg-gray-100">
+                                            <div className="h-32 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800">
                                                 <img src={img.preview} className="h-full w-full object-cover" alt={`Preview ${index + 1}`} />
                                             </div>
                                             <button
@@ -387,11 +387,11 @@ export default function Create({ categories, destinations: availableDestinations
                                                 ×
                                             </button>
                                             <div className="mt-1">
-                                                <label className="block text-xs text-gray-600">Ordre</label>
+                                                <label className="block text-xs text-gray-600 dark:text-gray-400">Ordre</label>
                                                 <input
                                                     type="number"
                                                     min={0}
-                                                    className="mt-1 block w-full rounded border border-gray-200 px-2 py-1 text-xs"
+                                                    className="mt-1 block w-full rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 text-xs"
                                                     value={img.displayOrder}
                                                     onChange={(e) => updateGalleryImageOrder(index, Number(e.target.value))}
                                                 />
@@ -399,12 +399,12 @@ export default function Create({ categories, destinations: availableDestinations
                                         </div>
                                     ))}
                                     {galleryImages.length === 0 && (
-                                        <div className="col-span-full text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                                            <p className="text-sm text-gray-500">Aucune image. Cliquez sur "Ajouter une image" pour en ajouter.</p>
+                                        <div className="col-span-full text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">Aucune image. Cliquez sur "Ajouter une image" pour en ajouter.</p>
                                         </div>
                                     )}
                                 </div>
-                                {errors.gallery_images && <p className="text-red-600 text-xs mt-1">{errors.gallery_images}</p>}
+                                {errors.gallery_images && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{errors.gallery_images}</p>}
                             </div>
 
                             <div className="md:col-span-2 flex flex-wrap gap-6">
@@ -415,16 +415,16 @@ export default function Create({ categories, destinations: availableDestinations
                                         checked={data.is_active}
                                         onChange={(e) => setData('is_active', e.target.checked)}
                                     />
-                                    <span className="text-sm text-gray-800">Actif</span>
+                                    <span className="text-sm text-gray-800 dark:text-gray-200">Actif</span>
                                 </label>
                                 <label className="inline-flex items-center gap-3">
                                     <input
                                         type="checkbox"
-                                        className="h-4 w-4 rounded border-gray-300 accent-[var(--primary)]"
+                                        className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 accent-[var(--primary)]"
                                         checked={data.show_price}
                                         onChange={(e) => setData('show_price', e.target.checked)}
                                     />
-                                    <span className="text-sm text-gray-800">Afficher le prix du service</span>
+                                    <span className="text-sm text-gray-800 dark:text-gray-200">Afficher le prix du service</span>
                                 </label>
                                 <label className="inline-flex items-center gap-3">
                                     <input
@@ -433,22 +433,22 @@ export default function Create({ categories, destinations: availableDestinations
                                         checked={data.requires_appointment}
                                         onChange={(e) => setData('requires_appointment', e.target.checked)}
                                     />
-                                    <span className="text-sm text-gray-800">Rendez-vous requis</span>
+                                    <span className="text-sm text-gray-800 dark:text-gray-200">Rendez-vous requis</span>
                                 </label>
                             </div>
 
                             {data.requires_appointment && (
-                                <div className="md:col-span-2 bg-blue-50 rounded-lg p-4 border border-blue-100">
-                                    <label className="block text-sm font-medium text-gray-800 mb-2">Mode de tarification pour ce service</label>
+                                <div className="md:col-span-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800">
+                                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">Mode de tarification pour ce service</label>
                                     <select
-                                        className="block w-full md:w-1/2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+                                        className="block w-full md:w-1/2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
                                         value={data.appointment_pricing_mode}
                                         onChange={(e) => setData('appointment_pricing_mode', e.target.value as 'service_plus_appointment' | 'appointment_only')}
                                     >
-                                        <option value="service_plus_appointment">Prix du service + Prix du rendez-vous</option>
-                                        <option value="appointment_only">Prix du rendez-vous uniquement</option>
+                                        <option value="service_plus_appointment" className="bg-white dark:bg-gray-800">Prix du service + Prix du rendez-vous</option>
+                                        <option value="appointment_only" className="bg-white dark:bg-gray-800">Prix du rendez-vous uniquement</option>
                                     </select>
-                                    <p className="text-xs text-gray-500 mt-2">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                         {data.appointment_pricing_mode === 'appointment_only' 
                                             ? "Le client paiera uniquement les frais de rendez-vous (le prix du service ne sera pas facturé)"
                                             : "Le client paiera le prix du service plus les frais de rendez-vous"}
@@ -462,40 +462,40 @@ export default function Create({ categories, destinations: availableDestinations
                     {/* Sous-services */}
                     <section>
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold">Sous-services</h2>
+                            <h2 className="text-lg font-semibold dark:text-gray-200">Sous-services</h2>
                             <button
                                 type="button"
                                 onClick={addSubService}
-                                className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                                className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                             >
                                 + Ajouter
                             </button>
                         </div>
                         <div className="space-y-4">
                             {subServices.map((sub, index) => (
-                                <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
+                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3 bg-gray-50/50 dark:bg-gray-800/50">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-medium text-gray-900">Sous-service {index + 1}</h3>
+                                        <h3 className="font-medium text-gray-900 dark:text-gray-100">Sous-service {index + 1}</h3>
                                         <button
                                             type="button"
                                             onClick={() => removeSubService(index)}
-                                            className="text-red-600 hover:text-red-700 text-sm"
+                                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm"
                                         >
                                             Supprimer
                                         </button>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Nom</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Nom</label>
                                             <input
                                                 type="text"
-                                                className="mt-1 block w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                                                className="mt-1 block w-full rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1.5 text-sm"
                                                 value={sub.name}
                                                 onChange={(e) => updateSubService(index, 'name', e.target.value)}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Slug</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Slug</label>
                                             <input
                                                 type="text"
                                                 className="mt-1 block w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
@@ -504,7 +504,7 @@ export default function Create({ categories, destinations: availableDestinations
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Prix</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Prix</label>
                                             <input
                                                 type="number"
                                                 min={0}
@@ -515,19 +515,19 @@ export default function Create({ categories, destinations: availableDestinations
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Actif</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Actif</label>
                                             <input
                                                 type="checkbox"
-                                                className="mt-1 h-4 w-4 rounded border-gray-300 accent-[var(--primary)]"
+                                                className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600 accent-[var(--primary)]"
                                                 checked={sub.is_active}
                                                 onChange={(e) => updateSubService(index, 'is_active', e.target.checked)}
                                             />
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-xs font-medium text-gray-700">Description</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Description</label>
                                             <textarea
                                                 rows={2}
-                                                className="mt-1 block w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                                                className="mt-1 block w-full rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1.5 text-sm"
                                                 value={sub.description}
                                                 onChange={(e) => updateSubService(index, 'description', e.target.value)}
                                             />
@@ -536,7 +536,7 @@ export default function Create({ categories, destinations: availableDestinations
                                 </div>
                             ))}
                             {subServices.length === 0 && (
-                                <p className="text-sm text-gray-500 text-center py-4">Aucun sous-service. Cliquez sur "Ajouter" pour en créer un.</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Aucun sous-service. Cliquez sur "Ajouter" pour en créer un.</p>
                             )}
                         </div>
                     </section>
@@ -557,7 +557,7 @@ export default function Create({ categories, destinations: availableDestinations
                             {requiredDocuments.map((doc, index) => (
                                 <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-medium text-gray-900">Document {index + 1}</h3>
+                                        <h3 className="font-medium text-gray-900 dark:text-gray-100">Document {index + 1}</h3>
                                         <button
                                             type="button"
                                             onClick={() => removeRequiredDocument(index)}
@@ -568,7 +568,7 @@ export default function Create({ categories, destinations: availableDestinations
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Nom</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Nom</label>
                                             <input
                                                 type="text"
                                                 className="mt-1 block w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
@@ -577,7 +577,7 @@ export default function Create({ categories, destinations: availableDestinations
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Ordre</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Ordre</label>
                                             <input
                                                 type="number"
                                                 min={0}
@@ -587,10 +587,10 @@ export default function Create({ categories, destinations: availableDestinations
                                             />
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-xs font-medium text-gray-700">Description</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Description</label>
                                             <textarea
                                                 rows={2}
-                                                className="mt-1 block w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                                                className="mt-1 block w-full rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1.5 text-sm"
                                                 value={doc.description}
                                                 onChange={(e) => updateRequiredDocument(index, 'description', e.target.value)}
                                             />
@@ -603,14 +603,14 @@ export default function Create({ categories, destinations: availableDestinations
                                                     checked={doc.is_required}
                                                     onChange={(e) => updateRequiredDocument(index, 'is_required', e.target.checked)}
                                                 />
-                                                <span className="text-xs text-gray-700">Requis</span>
+                                                <span className="text-xs text-gray-700 dark:text-gray-300">Requis</span>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                             {requiredDocuments.length === 0 && (
-                                <p className="text-sm text-gray-500 text-center py-4">Aucun document requis. Cliquez sur "Ajouter" pour en créer un.</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Aucun document requis. Cliquez sur "Ajouter" pour en créer un.</p>
                             )}
                         </div>
                     </section>
@@ -631,7 +631,7 @@ export default function Create({ categories, destinations: availableDestinations
                             {processingTimes.map((time, index) => (
                                 <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-medium text-gray-900">Option {index + 1}</h3>
+                                        <h3 className="font-medium text-gray-900 dark:text-gray-100">Option {index + 1}</h3>
                                         <button
                                             type="button"
                                             onClick={() => removeProcessingTime(index)}
@@ -652,7 +652,7 @@ export default function Create({ categories, destinations: availableDestinations
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Durée (heures)</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Durée (heures)</label>
                                             <input
                                                 type="number"
                                                 min={0}
@@ -662,7 +662,7 @@ export default function Create({ categories, destinations: availableDestinations
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700">Multiplicateur de prix</label>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Multiplicateur de prix</label>
                                             <input
                                                 type="number"
                                                 min={0}
@@ -676,7 +676,7 @@ export default function Create({ categories, destinations: availableDestinations
                                 </div>
                             ))}
                             {processingTimes.length === 0 && (
-                                <p className="text-sm text-gray-500 text-center py-4">Aucun temps de traitement. Cliquez sur "Ajouter" pour en créer un.</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Aucun temps de traitement. Cliquez sur "Ajouter" pour en créer un.</p>
                             )}
                         </div>
                     </section>
@@ -684,38 +684,38 @@ export default function Create({ categories, destinations: availableDestinations
                     {/* Destinations */}
                     <section>
                         <div className="mb-4">
-                            <h2 className="text-lg font-semibold">Destinations</h2>
-                            <p className="text-sm text-gray-600 mt-1">Sélectionnez les destinations pour lesquelles ce service est disponible.</p>
+                            <h2 className="text-lg font-semibold dark:text-gray-200">Destinations</h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Sélectionnez les destinations pour lesquelles ce service est disponible.</p>
                         </div>
                         <div className="space-y-3">
                             {availableDestinations.map((destination) => {
                                 const isSelected = selectedDestinations.some(d => d.id === destination.id);
                                 const destinationData = selectedDestinations.find(d => d.id === destination.id);
                                 return (
-                                    <div key={destination.id} className="border border-gray-200 rounded-lg p-4">
+                                    <div key={destination.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50/50 dark:bg-gray-800/50">
                                         <div className="flex items-start gap-4">
                                             <label className="inline-flex items-center gap-2 cursor-pointer flex-shrink-0">
                                                 <input
                                                     type="checkbox"
-                                                    className="h-4 w-4 rounded border-gray-300 accent-[var(--primary)]"
+                                                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 accent-[var(--primary)]"
                                                     checked={isSelected}
                                                     onChange={() => toggleDestination(destination.id)}
                                                 />
-                                                <span className="font-medium text-gray-900">
+                                                <span className="font-medium text-gray-900 dark:text-gray-100">
                                                     {destination.flag_emoji && <span className="mr-2">{destination.flag_emoji}</span>}
                                                     {destination.name}
-                                                    {destination.code && <span className="text-xs text-gray-500 ml-2">({destination.code})</span>}
+                                                    {destination.code && <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">({destination.code})</span>}
                                                 </span>
                                             </label>
                                             {isSelected && (
                                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 ml-4">
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-700">Prix spécifique (optionnel)</label>
+                                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Prix spécifique (optionnel)</label>
                                                         <input
                                                             type="number"
                                                             min={0}
                                                             step="0.01"
-                                                            className="mt-1 block w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                                                            className="mt-1 block w-full rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1.5 text-sm"
                                                             placeholder="Laissez vide pour utiliser le prix par défaut"
                                                             value={destinationData?.price_override ?? ''}
                                                             onChange={(e) => updateDestination(destination.id, 'price_override', e.target.value ? Number(e.target.value) : null)}
@@ -725,11 +725,11 @@ export default function Create({ categories, destinations: availableDestinations
                                                         <label className="inline-flex items-center gap-2">
                                                             <input
                                                                 type="checkbox"
-                                                                className="h-4 w-4 rounded border-gray-300 accent-[var(--primary)]"
+                                                                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 accent-[var(--primary)]"
                                                                 checked={destinationData?.is_active ?? true}
                                                                 onChange={(e) => updateDestination(destination.id, 'is_active', e.target.checked)}
                                                             />
-                                                            <span className="text-xs text-gray-700">Actif pour cette destination</span>
+                                                            <span className="text-xs text-gray-700 dark:text-gray-300">Actif pour cette destination</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -739,7 +739,7 @@ export default function Create({ categories, destinations: availableDestinations
                                 );
                             })}
                             {availableDestinations.length === 0 && (
-                                <p className="text-sm text-gray-500 text-center py-4">Aucune destination disponible. Créez d'abord des destinations.</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Aucune destination disponible. Créez d'abord des destinations.</p>
                             )}
                         </div>
                     </section>
@@ -782,7 +782,7 @@ export default function Create({ categories, destinations: availableDestinations
                                                 value={field.name}
                                                 onChange={(e) => updateFormField(index, 'name', e.target.value)}
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">Sans espaces ni caractères spéciaux</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sans espaces ni caractères spéciaux</p>
                                         </div>
                                         <div>
                                             <label className="block text-xs font-medium text-gray-700">Libellé <span className="text-red-500">*</span></label>
@@ -836,7 +836,7 @@ export default function Create({ categories, destinations: availableDestinations
                                                     checked={field.is_required}
                                                     onChange={(e) => updateFormField(index, 'is_required', e.target.checked)}
                                                 />
-                                                <span className="text-xs text-gray-700">Requis</span>
+                                                <span className="text-xs text-gray-700 dark:text-gray-300">Requis</span>
                                             </label>
                                             <label className="inline-flex items-center gap-2">
                                                 <input
@@ -897,7 +897,7 @@ export default function Create({ categories, destinations: availableDestinations
                             ))}
                             {formFields.length === 0 && (
                                 <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                                    <p className="text-sm text-gray-500 mb-2">Aucun champ personnalisé défini.</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Aucun champ personnalisé défini.</p>
                                     <p className="text-xs text-gray-400">Ces champs apparaîtront dans le formulaire de commande pour ce service.</p>
                                 </div>
                             )}
